@@ -1,0 +1,3 @@
+[submodule "src/SimpleGptChatHost/OpenAI.SDK"]
+	path = src/SimpleGptChatHost/OpenAI.SDK
+	url = https://github.com/Removable/OpenAI.SDK.git

@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  simplegptchathost.api:
+    container_name: simple-chat-api
+    image: ${DOCKER_REGISTRY-}simplegptchathost
+    build:
+      context: ./SimpleGptChatHost
+      dockerfile: SimpleGptChatHost.Api/Dockerfile
+    ports:
+      - "20105:80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_ENVIRONMENT=Development
+  simplegptchat.web:
+    container_name: simple-chat-web
+    build:
+      context: ./simple-gpt-chat-web
+      dockerfile: Dockerfile
+    ports:
+      - "20104:80"
+#    volumes:
+#      - ./simple-gpt-chat-web:/app
+#      - /app/node_modules
+    environment:
+      - NODE_ENV=development
