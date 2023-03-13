@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
-// export const BaseUrl = 'https://chat-api.igz.app';
-export const BaseUrl = 'http://localhost:20105';
+export const BaseUrl = 'https://chat-api.igz.app';
+// export const BaseUrl = 'http://localhost:20105';
 
 const instance = axios.create({
   baseURL: BaseUrl,
