@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AuthChecker from './components/AuthChecker';
 import ChatSignalRProvider from './hooks/ChatSignalR/chatSignalRProvider';
 import ChatPage from './pages/ChatPage';
+import TalkWithAI from './pages/TalkWithAI';
 import Root from './Root';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
                 <Routes>
                   <Route element={<Root />}>
                     <Route path={'/'} element={<ChatPage />} />
+                    <Route path={'/talk-with-ai'} element={<TalkWithAI />} />
                   </Route>
                 </Routes>
               </BrowserRouter>

@@ -88,26 +88,6 @@ const LeftSider = () => {
   return (
     <div className="dark md:fixed md:inset-y-0 md:w-[260px] text-center p-5">
       <Space direction="vertical" size="middle" className="w-full">
-        {/* <Button*/}
-        {/*  className="w-full"*/}
-        {/*  ghost*/}
-        {/*  type={'dashed'}*/}
-        {/*  onClick={() => {*/}
-        {/*    navigate('audio-to-minutes');*/}
-        {/*  }}*/}
-        {/* >*/}
-        {/*  用录音生成会议纪要<span className="text-rose-500">*NEW</span>*/}
-        {/* </Button>*/}
-        <Button
-          className="w-full"
-          type="dashed"
-          ghost
-          onClick={() => {
-            window.open('https://gitee.com/PlexPt/awesome-chatgpt-prompts-zh');
-          }}
-        >
-          ChatGPT 中文调教指南
-        </Button>
         {leftSiderElement}
       </Space>
     </div>

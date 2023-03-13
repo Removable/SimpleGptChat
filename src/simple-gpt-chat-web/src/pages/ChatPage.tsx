@@ -3,6 +3,7 @@ import { useLocalStorageState, useRequest, useTitle } from 'ahooks';
 import { Button, message, Modal, Spin } from 'antd';
 import { useSetAtom } from 'jotai';
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import ChatBox from '../components/ChatBox';
 import { ChatInfo, ChatRole, SendMsgArg } from '../components/ChatBox/ChatBox.types';
@@ -13,6 +14,7 @@ import { myAxios } from '../my-axios';
 const defaultChatInfos: ChatInfo[] = [];
 
 const ChatPage = () => {
+  const navigate = useNavigate();
   useTitle('简易版ChatGPT');
   const [thinking, setThinking] = useState(false);
   const { chatHub } = useChatSignalR();
@@ -159,6 +161,28 @@ const ChatPage = () => {
   const leftSiderButtons = [
     <Button
       key={0}
+      className="w-full"
+      type="dashed"
+      ghost
+      onClick={() => {
+        window.open('https://gitee.com/PlexPt/awesome-chatgpt-prompts-zh');
+      }}
+    >
+      ChatGPT 中文调教指南
+    </Button>,
+    <Button
+      key={1}
+      className="w-full"
+      ghost
+      type={'default'}
+      onClick={() => {
+        navigate('talk-with-ai');
+      }}
+    >
+      和AI语音对话<span className="text-rose-500">*NEW</span>
+    </Button>,
+    <Button
+      key={2}
       className="w-full"
       type="default"
       ghost
