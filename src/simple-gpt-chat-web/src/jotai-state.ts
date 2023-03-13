@@ -1,3 +1,5 @@
 import { atom } from 'jotai';
 
-export const leftSiderElementAtom = atom<JSX.Element[]>([]);
+const leftSiderElementAtom = atom<JSX.Element[]>([]);
+
+export { leftSiderElementAtom };
