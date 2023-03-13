@@ -64,16 +64,12 @@ const ChatPage = () => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
 
-    callSendMsgRequest
-      .runAsync(arg)
-      .then(() => {
-        // do nothing
-      })
-      .catch(() => {
-        newChatInfo.Failed = true;
-        tempStoredChatInfos = [...existChatInfos, newChatInfo];
-        setStoredChatInfos(tempStoredChatInfos);
-      });
+    const res = await callSendMsgRequest.runAsync(arg);
+    if (res.status !== 200) {
+      newChatInfo.Failed = true;
+      tempStoredChatInfos = [...existChatInfos, newChatInfo];
+      setStoredChatInfos(tempStoredChatInfos);
+    }
   };
 
   const sendMsg = async () => {
@@ -257,7 +253,9 @@ const ChatPage = () => {
         <div className="fixed bottom-0 left-0 w-full border-t md:pl-[260px] md:border-t-0 dark:border-white/20 md:border-transparent md:dark:border-transparent md:bg-vert-light-gradient bg-white dark:bg-gray-800 md:!bg-transparent dark:md:bg-vert-dark-gradient">
           {useAudio ? (
             <AudioRecorder
-              storedChatInfos={storedChatInfos}
+              storedChatInfos={() => {
+                return storedChatInfos;
+              }}
               setStoredChatInfos={(infos: ChatInfo[]) => {
                 setStoredChatInfos(infos);
               }}
@@ -350,10 +348,26 @@ const AudioRecorder = (props: AudioRecorderProps) => {
       Role: ChatRole.User,
       Timestamp: Date.now(),
     };
-    const tempStoredChatInfos = [...props.storedChatInfos, newChatInfo];
+    let storedChatInfos = props.storedChatInfos();
+
+    const tempStoredChatInfos = [...storedChatInfos, newChatInfo];
     props.setStoredChatInfos(tempStoredChatInfos);
-    await props.commonSendFunc(newChatInfo, props.storedChatInfos);
+    await props.commonSendFunc(newChatInfo, storedChatInfos);
     setLoading(false);
+    setAudioBlob(null);
+
+    const synth = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance();
+
+    storedChatInfos = props.storedChatInfos();
+    const lastChat = storedChatInfos[storedChatInfos.length - 1];
+
+    utterance.text = lastChat?.Message ?? '';
+    utterance.lang = 'en-US';
+    utterance.volume = 5;
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    synth.speak(utterance);
   };
 
   return (
@@ -412,7 +426,7 @@ const AudioRecorder = (props: AudioRecorderProps) => {
 export default ChatPage;
 
 interface AudioRecorderProps {
-  storedChatInfos: ChatInfo[];
+  storedChatInfos: () => ChatInfo[];
   setStoredChatInfos: (value: ChatInfo[]) => void;
   commonSendFunc: (newChatInfo: ChatInfo, storedChatInfos: ChatInfo[]) => Promise<void>;
 }
