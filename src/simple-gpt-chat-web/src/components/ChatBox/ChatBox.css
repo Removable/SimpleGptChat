@@ -1,0 +1,23 @@
+.markdown ol {
+  counter-reset: my-counter;
+  display: flex;
+  flex-direction: column;
+  padding-left: 1rem;
+  list-style-type: decimal;
+  margin: 10px;
+}
+
+.markdown ol li {
+  counter-increment: my-counter;
+  padding-left: 0.375em;
+  display: list-item;
+  text-align: -webkit-match-parent;
+  margin-top: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.markdown ol li::marker {
+  content: counter(my-counter, decimal) '. ';
+  color: #6b7280;
+  font-weight: 400;
+}

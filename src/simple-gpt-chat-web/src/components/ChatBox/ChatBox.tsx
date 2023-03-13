@@ -1,3 +1,5 @@
+import './ChatBox.css';
+
 import { UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, message } from 'antd';
 import React, { CSSProperties } from 'react';
@@ -82,92 +84,94 @@ export const ChatBox = (props: ChatBoxProps) => {
           </div>
           <div className="relative flex w-[calc(100vw-6rem)] flex-col gap-1 md:gap-3 lg:w-[calc(100%-115px)]">
             <div className="flex flex-grow flex-col gap-3 w-full">
-              <div className="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap w-full">
-                <ReactMarkdown
-                  {...props}
-                  components={{
-                    code({ node, inline, className, children, ...props }) {
-                      const match = /language-(\w+)/.exec(className || '');
-                      return !inline && match ? (
-                        <div>
-                          <CopyToClipboard
-                            text={String(children).replace(/\n$/, '')}
-                            onCopy={() => message.success('已复制')}
+              <div className="min-h-[20px] flex flex-col items-start gap-4 w-full">
+                <div className="markdown prose w-full break-words dark:prose-invert light">
+                  <ReactMarkdown
+                    {...props}
+                    components={{
+                      code({ node, inline, className, children, ...props }) {
+                        const match = /language-(\w+)/.exec(className || '');
+                        return !inline && match ? (
+                          <div>
+                            <CopyToClipboard
+                              text={String(children).replace(/\n$/, '')}
+                              onCopy={() => message.success('已复制')}
+                            >
+                              <div className="bg-gray-800 h-[32px] rounded-t-lg text-[#ceceba] flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans">
+                                <span>
+                                  {className === undefined
+                                    ? ''
+                                    : className.substring('language-'.length)}
+                                </span>
+                                <button className="flex ml-auto gap-2">
+                                  <svg
+                                    stroke="currentColor"
+                                    fill="none"
+                                    strokeWidth="2"
+                                    viewBox="0 0 24 24"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="h-4 w-4"
+                                    height="1em"
+                                    width="1em"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                    <rect
+                                      x="8"
+                                      y="2"
+                                      width="8"
+                                      height="4"
+                                      rx="1"
+                                      ry="1"
+                                    ></rect>
+                                  </svg>
+                                  Copy code
+                                </button>
+                              </div>
+                            </CopyToClipboard>
+                            <SyntaxHighlighter
+                              style={coldarkDark}
+                              language={match[1]}
+                              PreTag="div"
+                              customStyle={codeCustomStyle}
+                            >
+                              {String(children).replace(/\n$/, '')}
+                            </SyntaxHighlighter>
+                          </div>
+                        ) : (
+                          <code className={className} {...props} style={codeCustomStyle}>
+                            {children}
+                          </code>
+                        );
+                      },
+                      pre({ node, className, children, ...props }) {
+                        return (
+                          <pre
+                            className={className}
+                            {...props}
+                            style={{ maxWidth: '100%', overflowX: 'auto' }}
                           >
-                            <div className="bg-gray-800 h-[32px] rounded-t-lg text-[#ceceba] flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans">
-                              <span>
-                                {className === undefined
-                                  ? ''
-                                  : className.substring('language-'.length)}
-                              </span>
-                              <button className="flex ml-auto gap-2">
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="h-4 w-4"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                                  <rect
-                                    x="8"
-                                    y="2"
-                                    width="8"
-                                    height="4"
-                                    rx="1"
-                                    ry="1"
-                                  ></rect>
-                                </svg>
-                                Copy code
-                              </button>
-                            </div>
-                          </CopyToClipboard>
-                          <SyntaxHighlighter
-                            style={coldarkDark}
-                            language={match[1]}
-                            PreTag="div"
-                            customStyle={codeCustomStyle}
+                            {children}
+                          </pre>
+                        );
+                      },
+                      p({ node, className, children, ...props }) {
+                        return (
+                          <p
+                            className={className}
+                            {...props}
+                            style={{ wordWrap: 'break-word', width: '100%' }}
                           >
-                            {String(children).replace(/\n$/, '')}
-                          </SyntaxHighlighter>
-                        </div>
-                      ) : (
-                        <code className={className} {...props} style={codeCustomStyle}>
-                          {children}
-                        </code>
-                      );
-                    },
-                    pre({ node, className, children, ...props }) {
-                      return (
-                        <pre
-                          className={className}
-                          {...props}
-                          style={{ maxWidth: '100%', overflowX: 'auto' }}
-                        >
-                          {children}
-                        </pre>
-                      );
-                    },
-                    p({ node, className, children, ...props }) {
-                      return (
-                        <p
-                          className={className}
-                          {...props}
-                          style={{ wordWrap: 'break-word', width: '100%' }}
-                        >
-                          {children}
-                        </p>
-                      );
-                    },
-                  }}
-                >
-                  {props.content}
-                </ReactMarkdown>
+                            {children}
+                          </p>
+                        );
+                      },
+                    }}
+                  >
+                    {props.content}
+                  </ReactMarkdown>
+                </div>
               </div>
               {props.failed ? (
                 <div className="flex flex-grow flex-col gap-3">
