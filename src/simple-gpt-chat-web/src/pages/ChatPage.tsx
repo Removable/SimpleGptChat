@@ -1,9 +1,14 @@
-import { SendOutlined } from '@ant-design/icons';
-import { useLocalStorageState, useRequest, useTitle } from 'ahooks';
+import {
+  AudioOutlined,
+  CheckCircleOutlined,
+  DeleteOutlined,
+  SendOutlined,
+} from '@ant-design/icons';
+import { useLocalStorageState, useRequest, useTitle, useToggle } from 'ahooks';
 import { Button, message, Modal, Spin } from 'antd';
 import { useSetAtom } from 'jotai';
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useReactMediaRecorder } from 'react-media-recorder';
 
 import ChatBox from '../components/ChatBox';
 import { ChatInfo, ChatRole, SendMsgArg } from '../components/ChatBox/ChatBox.types';
@@ -14,8 +19,8 @@ import { myAxios } from '../my-axios';
 const defaultChatInfos: ChatInfo[] = [];
 
 const ChatPage = () => {
-  const navigate = useNavigate();
   useTitle('简易版ChatGPT');
+  const [useAudio, setUseAudio] = useToggle(false);
   const [thinking, setThinking] = useState(false);
   const { chatHub } = useChatSignalR();
   const [inputMsg, setInputMsg] = useState('');
@@ -176,10 +181,10 @@ const ChatPage = () => {
       ghost
       type={'default'}
       onClick={() => {
-        navigate('talk-with-ai');
+        setUseAudio.toggle();
       }}
     >
-      和AI语音对话<span className="text-rose-500">*NEW</span>
+      切换文字/语音模式<span className="text-rose-500">*NEW</span>
     </Button>,
     <Button
       key={2}
@@ -250,36 +255,164 @@ const ChatPage = () => {
           </Spin>
         </div>
         <div className="fixed bottom-0 left-0 w-full border-t md:pl-[260px] md:border-t-0 dark:border-white/20 md:border-transparent md:dark:border-transparent md:bg-vert-light-gradient bg-white dark:bg-gray-800 md:!bg-transparent dark:md:bg-vert-dark-gradient">
-          <form className="stretch mx-2 flex flex-row gap-3 pt-2 last:mb-2 md:last:mb-6 lg:mx-auto lg:max-w-3xl lg:pt-6">
-            <div className="relative flex h-full flex-1 md:flex-col">
-              <div className="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
-                <textarea
-                  value={inputMsg}
-                  disabled={callSendMsgRequest.loading}
-                  tabIndex={0}
-                  rows={1}
-                  wrap={'soft'}
-                  onInput={handleChange}
-                  onKeyDown={handleKeyDown}
-                  placeholder={'按Enter换行，按Ctrl+Enter发送'}
-                  className="overflow-auto max-h-[200px] m-0 w-full resize-none border-0 focus:outline-none bg-transparent p-0 pl-2 pr-[2.6rem] focus:ring-0 focus-visible:ring-0 dark:bg-transparent md:pl-0"
-                  ref={textareaRef}
-                ></textarea>
-                <div className="absolute p-1 bottom-0 right-1 md:bottom-1 md:right-2">
-                  <Button
-                    icon={<SendOutlined />}
-                    type={'text'}
-                    onClick={sendMsg}
-                    loading={callSendMsgRequest.loading}
-                  />
+          {useAudio ? (
+            <AudioRecorder
+              storedChatInfos={storedChatInfos}
+              setStoredChatInfos={(infos: ChatInfo[]) => {
+                setStoredChatInfos(infos);
+              }}
+              commonSendFunc={commonSendFunc}
+            />
+          ) : (
+            <form className="stretch mx-2 flex flex-row gap-3 pt-2 last:mb-2 md:last:mb-6 lg:mx-auto lg:max-w-3xl lg:pt-6">
+              <div className="relative flex h-full flex-1 md:flex-col">
+                <div className="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
+                  <textarea
+                    value={inputMsg}
+                    disabled={callSendMsgRequest.loading}
+                    tabIndex={0}
+                    rows={1}
+                    wrap={'soft'}
+                    onInput={handleChange}
+                    onKeyDown={handleKeyDown}
+                    placeholder={'按Enter换行，按Ctrl+Enter发送'}
+                    className="overflow-auto max-h-[200px] m-0 w-full resize-none border-0 focus:outline-none bg-transparent p-0 pl-2 pr-[2.6rem] focus:ring-0 focus-visible:ring-0 dark:bg-transparent md:pl-0"
+                    ref={textareaRef}
+                  ></textarea>
+                  <div className="absolute p-1 bottom-0 right-1 md:bottom-1 md:right-2">
+                    <Button
+                      icon={<SendOutlined />}
+                      type={'text'}
+                      onClick={sendMsg}
+                      loading={callSendMsgRequest.loading}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </form>
+            </form>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
+const AudioRecorder = (props: AudioRecorderProps) => {
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { status, startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
+    audio: true,
+    blobPropertyBag: {
+      type: 'audio/mp3',
+    },
+    onStop: (blobUrl, blob) => {
+      console.log(blob);
+      setAudioBlob(blob);
+    },
+  });
+  const [recordedTime, setRecordedTime] = useState(0);
+  const [clear, setClear] = useState<number>(0);
+
+  const start = () => {
+    setRecordedTime(0);
+    startRecording();
+    const c = window.setInterval(() => {
+      setRecordedTime((recordedTime) => recordedTime + 10);
+    }, 10);
+    setClear(c);
+  };
+
+  const stop = () => {
+    stopRecording();
+    if (clear) window.clearInterval(clear);
+  };
+
+  const clearAudio = () => {
+    setAudioBlob(null);
+    setRecordedTime(0);
+  };
+
+  const send = async () => {
+    if (!audioBlob) {
+      message.error('尚未录音！');
+      return;
+    }
+
+    setLoading(true);
+
+    const res = await myAxios.post<string>(
+      '/api/Chat/SendAudio',
+      { file: audioBlob },
+      'fromForm',
+    );
+    const newChatInfo: ChatInfo = {
+      Message: res.data.trim(),
+      Role: ChatRole.User,
+      Timestamp: Date.now(),
+    };
+    const tempStoredChatInfos = [...props.storedChatInfos, newChatInfo];
+    props.setStoredChatInfos(tempStoredChatInfos);
+    await props.commonSendFunc(newChatInfo, props.storedChatInfos);
+    setLoading(false);
+  };
+
+  return (
+    <>
+      <div className="stretch items-center justify-center mx-2 flex flex-row gap-3 md:h-[98px] h-[50px]">
+        {/* <audio*/}
+        {/*  className="w-[250px] h-[40px]"*/}
+        {/*  src={mediaBlobUrl}*/}
+        {/*  controls*/}
+        {/*  autoPlay={false}*/}
+        {/* />*/}
+        {status === 'recording' ? (
+          <Button
+            type="default"
+            shape="circle"
+            size="large"
+            icon={<CheckCircleOutlined />}
+            onClick={stop}
+          />
+        ) : (
+          <Button
+            type="default"
+            shape="circle"
+            size="large"
+            icon={<AudioOutlined />}
+            disabled={loading}
+            onClick={start}
+          />
+        )}
+        <span className="w-[50px] text-center">{`${(recordedTime / 1000).toFixed(
+          2,
+        )} s`}</span>
+        <Button
+          type="default"
+          size="large"
+          shape="circle"
+          disabled={!audioBlob || loading}
+          icon={<DeleteOutlined />}
+          onClick={clearAudio}
+        />
+        <div className="pl-[40px]">
+          <Button
+            type="primary"
+            size="large"
+            shape="circle"
+            icon={<SendOutlined />}
+            loading={loading}
+            onClick={send}
+          />
+        </div>
+      </div>
+    </>
+  );
+};
+
 export default ChatPage;
+
+interface AudioRecorderProps {
+  storedChatInfos: ChatInfo[];
+  setStoredChatInfos: (value: ChatInfo[]) => void;
+  commonSendFunc: (newChatInfo: ChatInfo, storedChatInfos: ChatInfo[]) => Promise<void>;
+}
