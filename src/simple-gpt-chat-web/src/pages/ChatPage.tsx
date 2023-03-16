@@ -9,6 +9,7 @@ import { Button, message, Modal, Spin, Switch } from 'antd';
 import { useSetAtom } from 'jotai';
 import React, { useEffect, useRef, useState } from 'react';
 import { useReactMediaRecorder } from 'react-media-recorder';
+import { useNavigate } from 'react-router-dom';
 
 import ChatBox from '../components/ChatBox';
 import { ChatInfo, ChatRole, SendMsgArg } from '../components/ChatBox/ChatBox.types';
@@ -31,6 +32,7 @@ const ChatPage = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const setLeftSiderElement = useSetAtom(leftSiderElementAtom);
   const [isTextMode, setIsTextMode] = useState(true);
+  const navigate = useNavigate();
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value, style } = event.target;
@@ -186,7 +188,18 @@ const ChatPage = () => {
 
   const leftSiderButtons = [
     <Button
-      key={0}
+      key={'translate'}
+      className="w-full"
+      type="default"
+      ghost
+      onClick={() => {
+        navigate('/translate');
+      }}
+    >
+      翻译
+    </Button>,
+    <Button
+      key={'clear'}
       className="w-full"
       type="default"
       ghost
@@ -209,7 +222,7 @@ const ChatPage = () => {
       清空聊天记录
     </Button>,
     <div
-      key={1}
+      key={'switch-mode'}
       className="text-white w-full h-[32px] flex flex-row justify-center items-center rounded-md border border-white select-none"
     >
       <span>切换模式：</span>
@@ -315,7 +328,7 @@ const ChatPage = () => {
 const AudioRecorder = (props: AudioRecorderProps) => {
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [loading, setLoading] = useState(false);
-  const { status, startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
+  const { status, startRecording, stopRecording } = useReactMediaRecorder({
     audio: true,
     blobPropertyBag: {
       type: 'audio/mp3',
