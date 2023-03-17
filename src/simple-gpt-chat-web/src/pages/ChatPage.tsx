@@ -196,13 +196,26 @@ const ChatPage = () => {
         navigate('/translate');
       }}
     >
-      翻译
+      翻译<sup className="text-rose-500"> NEW</sup>
     </Button>,
+    <div
+      key={'switch-mode'}
+      className="text-white w-full h-[32px] flex flex-row justify-center items-center rounded-md border border-white select-none"
+    >
+      <span>切换模式：</span>
+      <Switch
+        defaultChecked={isTextMode}
+        checkedChildren="文本模式"
+        unCheckedChildren="语音模式"
+        onChange={onModeChange}
+      />
+    </div>,
     <Button
       key={'clear'}
       className="w-full"
       type="default"
       ghost
+      danger
       onClick={() => {
         Modal.confirm({
           title: '清空聊天记录',
@@ -221,18 +234,6 @@ const ChatPage = () => {
     >
       清空聊天记录
     </Button>,
-    <div
-      key={'switch-mode'}
-      className="text-white w-full h-[32px] flex flex-row justify-center items-center rounded-md border border-white select-none"
-    >
-      <span>切换模式：</span>
-      <Switch
-        defaultChecked={isTextMode}
-        checkedChildren="文本模式"
-        unCheckedChildren="语音模式"
-        onChange={onModeChange}
-      />
-    </div>,
   ];
 
   useEffect(() => {
