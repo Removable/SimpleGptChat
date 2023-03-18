@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenAI.GPT3.Interfaces;
@@ -24,21 +25,29 @@ public class TranslateController : Controller
     {
         try
         {
+            var content = new StringBuilder(string.IsNullOrWhiteSpace(from) || from.Equals("auto", StringComparison.OrdinalIgnoreCase)
+                ? $"请先判断出以下内容的语种，然后将其翻译为{to}"
+                : $"请将以下的{from}内容翻译为{to}");
+            content.Append("。我要你只返回翻译结果，不用对其进行解释或介绍，也不要告诉我语种的判断结果：");
+            // content.Append("，并直接告诉我以下内容的翻译结果，除此之外请勿包含任何其他提示、询问等内容：");
+            content.AppendLine();
+            content.Append(originContent);
+
             var completionResult = await _openAiService.ChatCompletion.CreateCompletion(
                 new ChatCompletionCreateRequest
                 {
                     Messages = new[]
                     {
                         ChatMessage.FromSystem(
-                            $"你是一个专业的翻译官，请将用户输入的所有内容翻译成{to}，语气活泼一些，并直接输出翻译结果。"),
-                        ChatMessage.FromUser(originContent)
+                            $"现在你是一个专业的翻译员，翻译时不要带翻译腔，请翻译得准确、自然、流畅。"),
+                        ChatMessage.FromUser(content.ToString())
                     },
                 });
 
             if (completionResult.Successful && completionResult.Choices.FirstOrDefault() is { } choice)
             {
                 var msg = choice.Message.Content ?? "";
-                return Ok(msg);
+                return Ok(msg.Trim());
             }
 
             return Problem();

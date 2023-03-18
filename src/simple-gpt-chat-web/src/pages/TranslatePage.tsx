@@ -17,6 +17,7 @@ const TranslatePage = () => {
   const [charCount, setCharCount] = useState(0);
   const [userInput, setUserInput] = useState('');
   const [translateResult, setTranslateResult] = useState('');
+  const [translateFrom, setTranslateFrom] = useState('auto');
   const [translateTo, setTranslateTo] = useState('简体中文');
 
   const handleInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -25,20 +26,29 @@ const TranslatePage = () => {
     setUserInput(event.target.value);
   };
 
-  const callTranslate = (originContent: string, to: string) => {
+  const callTranslate = (originContent: string, from: string, to: string) => {
     const param: FormData = new FormData();
     param.append('originContent', originContent);
+    param.append('from', from);
     param.append('to', to);
     return myAxios.post<string>('/api/Translate/Translate', param, 'fromForm');
   };
   const callTranslateRequest = useRequest(callTranslate, {
     manual: true,
-    debounceWait: 300,
-    loadingDelay: 100,
   });
 
   const translate = async () => {
-    const res = await callTranslateRequest.runAsync(userInput, translateTo);
+    if (userInput.trim().length <= 0) {
+      message.warning('请输入要翻译的内容!');
+      return;
+    }
+
+    setTranslateResult('');
+    const res = await callTranslateRequest.runAsync(
+      userInput,
+      translateFrom,
+      translateTo,
+    );
     if (res.status !== 200) {
       message.error('翻译失败');
     } else {
@@ -76,8 +86,17 @@ const TranslatePage = () => {
         <div className="h-12 border-b-[1px] bg-white flex-none">
           <div className="w-full h-full flex flex-col">
             <div className="h-12 border-b-[1px] bg-white max-w-7xl md:rounded-t-md flex items-center justify-between px-4">
-              <Select defaultValue="auto" style={{ width: 120 }}>
+              <Select
+                defaultValue="auto"
+                style={{ width: 120 }}
+                onChange={(v) => setTranslateFrom(v)}
+              >
                 <Option value="auto">自动检测</Option>
+                <Option value="简体中文">简体中文</Option>
+                <Option value="英语">英语</Option>
+                <Option value="日语">日语</Option>
+                <Option value="韩语">韩语</Option>
+                <Option value="法语">法语</Option>
               </Select>
               <span>翻译成</span>
               <Select
@@ -117,7 +136,7 @@ const TranslatePage = () => {
             </Button>
           </div>
           <textarea
-            className="h-[45%] md:h-full w-full md:w-[45%] p-2 mt-4 mt-0 text-base bg-gray-100 border border-gray-300 rounded-md resize-none readonly focus:ring-0 focus:border-gray-300"
+            className="h-[45%] md:h-full w-full md:w-[45%] p-2 mt-0 text-base bg-gray-100 border border-gray-300 rounded-md resize-none readonly focus:ring-0 focus:border-gray-300"
             placeholder="翻译后的文本将显示在这里"
             readOnly
             value={translateResult}
