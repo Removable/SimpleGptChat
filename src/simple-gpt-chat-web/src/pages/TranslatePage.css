@@ -1,0 +1,49 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #f0f0f0;
+}
+
+.translation-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.translation-input,
+.translation-output {
+  width: 48%;
+  height: 200px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+}
+
+.translation-output {
+  background-color: #f8f8f8;
+}
+
+/* 媒体查询 */
+@media screen and (max-width: 768px) {
+  .translation-container {
+    flex-direction: column;
+  }
+
+  .translation-input,
+  .translation-output {
+    width: 100%;
+  }
+
+  .translation-output {
+    margin-top: 20px;
+  }
+}

@@ -55,7 +55,7 @@ const get = <T>(url: string, params: any = {}): Promise<AxiosResponse<T>> => {
 
 const post = async <T>(
   url: string,
-  params: any = {},
+  params: FormData | any = {},
   dataFrom: dataFromType = 'fromBody',
 ): Promise<AxiosResponse<T>> => {
   let headers: object;
@@ -70,11 +70,13 @@ const post = async <T>(
     headers = {
       'Content-Type': 'multipart/form-data',
     };
-    const formData = new FormData();
-    for (const key in params) {
-      formData.append(key, params[key]);
+    if (!(params instanceof FormData)) {
+      const formData = new FormData();
+      for (const key in params) {
+        formData.append(key, params[key]);
+      }
+      params = formData;
     }
-    params = formData;
   }
   return instance.post<T>(url, params, { headers });
 };

@@ -20,10 +20,10 @@
   "dependencies": {
     "@ant-design/cssinjs": "^1.6.1",
     "@ant-design/icons": "^5.0.1",
-    "@axa-fr/react-oidc": "^6.15.5",
-    "@microsoft/signalr": "^7.0.3",
+    "@axa-fr/react-oidc": "^6.15.9",
+    "@microsoft/signalr": "^7.0.4",
     "ahooks": "^3.7.5",
-    "antd": "^5.3.0",
+    "antd": "^5.3.1",
     "axios": "^1.3.4",
     "jotai": "^2.0.3",
     "react": "^18.2.0",
@@ -31,7 +31,7 @@
     "react-dom": "^18.2.0",
     "react-markdown": "^8.0.5",
     "react-media-recorder": "^1.6.6",
-    "react-router-dom": "^6.8.2",
+    "react-router-dom": "^6.9.0",
     "react-syntax-highlighter": "^15.5.0"
   },
   "devDependencies": {
@@ -39,12 +39,12 @@
     "@types/react-copy-to-clipboard": "^5.0.4",
     "@types/react-dom": "^18.0.11",
     "@types/react-syntax-highlighter": "^15.5.6",
-    "@typescript-eslint/eslint-plugin": "^5.54.0",
-    "@typescript-eslint/parser": "^5.54.0",
+    "@typescript-eslint/eslint-plugin": "^5.55.0",
+    "@typescript-eslint/parser": "^5.55.0",
     "@vitejs/plugin-react-swc": "^3.2.0",
-    "autoprefixer": "^10.4.13",
-    "eslint": "^8.35.0",
-    "eslint-config-prettier": "^8.6.0",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.36.0",
+    "eslint-config-prettier": "^8.7.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
@@ -53,6 +53,6 @@
     "prettier": "2.8.4",
     "tailwindcss": "^3.2.7",
     "typescript": "^4.9.5",
-    "vite": "^4.1.4"
+    "vite": "^4.2.0"
   }
 }
