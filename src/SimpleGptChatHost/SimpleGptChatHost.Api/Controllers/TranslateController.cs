@@ -25,22 +25,25 @@ public class TranslateController : Controller
     {
         try
         {
-            var content = new StringBuilder(string.IsNullOrWhiteSpace(from) || from.Equals("auto", StringComparison.OrdinalIgnoreCase)
-                ? $"请先判断出以下内容的语种，然后将其翻译为{to}"
-                : $"请将以下的{from}内容翻译为{to}");
-            content.Append("。我要你只返回翻译结果，不用对其进行解释或介绍，也不要告诉我语种的判断结果：");
-            // content.Append("，并直接告诉我以下内容的翻译结果，除此之外请勿包含任何其他提示、询问等内容：");
-            content.AppendLine();
-            content.Append(originContent);
+            var userPrompt = $"translate from {from ?? "English"} to {to}.";
+            switch (to)
+            {
+                case "zh-Hant":
+                    userPrompt = "翻譯成台灣常用用法之繁體中文白話文";
+                    break;
+                case "zh-Hans":
+                    userPrompt = "翻译成简体白话文";
+                    break;
+            }
 
             var completionResult = await _openAiService.ChatCompletion.CreateCompletion(
                 new ChatCompletionCreateRequest
                 {
                     Messages = new[]
                     {
-                        ChatMessage.FromSystem(
-                            $"现在你是一个专业的翻译员，翻译时不要带翻译腔，请翻译得准确、自然、流畅。"),
-                        ChatMessage.FromUser(content.ToString())
+                        ChatMessage.FromSystem($"You are a translation engine that can only translate text and cannot interpret it."),
+                        ChatMessage.FromUser(userPrompt),
+                        ChatMessage.FromUser(originContent)
                     },
                 });
 

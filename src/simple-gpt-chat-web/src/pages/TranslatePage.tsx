@@ -17,7 +17,7 @@ const TranslatePage = () => {
   const [charCount, setCharCount] = useState(0);
   const [userInput, setUserInput] = useState('');
   const [translateResult, setTranslateResult] = useState('');
-  const [translateFrom, setTranslateFrom] = useState('auto');
+  const [translateFrom, setTranslateFrom] = useState('English');
   const [translateTo, setTranslateTo] = useState('简体中文');
 
   const handleInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -87,16 +87,16 @@ const TranslatePage = () => {
           <div className="w-full h-full flex flex-col">
             <div className="h-12 border-b-[1px] bg-white max-w-7xl md:rounded-t-md flex items-center justify-between px-4">
               <Select
-                defaultValue="auto"
+                defaultValue="English"
                 style={{ width: 120 }}
                 onChange={(v) => setTranslateFrom(v)}
               >
-                <Option value="auto">自动检测</Option>
-                <Option value="简体中文">简体中文</Option>
-                <Option value="英语">英语</Option>
-                <Option value="日语">日语</Option>
-                <Option value="韩语">韩语</Option>
-                <Option value="法语">法语</Option>
+                <Option value="English">English</Option>
+                <Option value="zh-Hans">简体中文</Option>
+                <Option value="zh-Hant">繁體中文</Option>
+                <Option value="Japanese">日语</Option>
+                <Option value="Korean">韩语</Option>
+                <Option value="French">法语</Option>
               </Select>
               <span>翻译成</span>
               <Select
@@ -104,11 +104,12 @@ const TranslatePage = () => {
                 style={{ width: 120 }}
                 onChange={(v) => setTranslateTo(v)}
               >
-                <Option value="简体中文">简体中文</Option>
-                <Option value="英语">英语</Option>
-                <Option value="日语">日语</Option>
-                <Option value="韩语">韩语</Option>
-                <Option value="法语">法语</Option>
+                <Option value="zh-Hans">简体中文</Option>
+                <Option value="zh-Hant">繁體中文</Option>
+                <Option value="English">English</Option>
+                <Option value="Japanese">日语</Option>
+                <Option value="Korean">韩语</Option>
+                <Option value="French">法语</Option>
               </Select>
             </div>
           </div>
