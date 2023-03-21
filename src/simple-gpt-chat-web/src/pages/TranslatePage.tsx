@@ -4,7 +4,6 @@ import { useRequest } from 'ahooks';
 import { Button, message, Select } from 'antd';
 import { useSetAtom } from 'jotai';
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { leftSiderElementAtom } from '../jotai-state';
 import { myAxios } from '../my-axios';
@@ -13,7 +12,6 @@ const { Option } = Select;
 
 const TranslatePage = () => {
   const setLeftSiderElement = useSetAtom(leftSiderElementAtom);
-  const navigate = useNavigate();
   const [charCount, setCharCount] = useState(0);
   const [userInput, setUserInput] = useState('');
   const [translateResult, setTranslateResult] = useState('');
@@ -56,19 +54,7 @@ const TranslatePage = () => {
     }
   };
 
-  const leftSiderButtons = [
-    <Button
-      key={0}
-      className="w-full"
-      type="default"
-      ghost
-      onClick={() => {
-        navigate('/');
-      }}
-    >
-      返回
-    </Button>,
-  ];
+  const leftSiderButtons = [<div key={'0'}></div>];
 
   useEffect(() => {
     setLeftSiderElement(leftSiderButtons);

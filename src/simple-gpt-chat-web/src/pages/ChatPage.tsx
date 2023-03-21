@@ -9,7 +9,6 @@ import { Button, message, Modal, Spin, Switch } from 'antd';
 import { useSetAtom } from 'jotai';
 import React, { useEffect, useRef, useState } from 'react';
 import { useReactMediaRecorder } from 'react-media-recorder';
-import { useNavigate } from 'react-router-dom';
 
 import ChatBox from '../components/ChatBox';
 import { ChatInfo, ChatRole, SendMsgArg } from '../components/ChatBox/ChatBox.types';
@@ -32,7 +31,6 @@ const ChatPage = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const setLeftSiderElement = useSetAtom(leftSiderElementAtom);
   const [isTextMode, setIsTextMode] = useState(true);
-  const navigate = useNavigate();
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value, style } = event.target;
@@ -188,15 +186,15 @@ const ChatPage = () => {
 
   const leftSiderButtons = [
     <Button
-      key={'translate'}
+      key={'awesome-chatgpt-prompts-zh'}
       className="w-full"
-      type="default"
+      type="dashed"
       ghost
       onClick={() => {
-        navigate('/translate');
+        window.open('https://gitee.com/PlexPt/awesome-chatgpt-prompts-zh');
       }}
     >
-      翻译<sup className="text-rose-500"> NEW</sup>
+      ChatGPT 中文调教指南
     </Button>,
     <div
       key={'switch-mode'}
@@ -394,12 +392,6 @@ const AudioRecorder = (props: AudioRecorderProps) => {
   return (
     <>
       <div className="stretch items-center justify-center mx-2 flex flex-row gap-3 md:h-[98px] h-[50px]">
-        {/* <audio*/}
-        {/*  className="w-[250px] h-[40px]"*/}
-        {/*  src={mediaBlobUrl}*/}
-        {/*  controls*/}
-        {/*  autoPlay={false}*/}
-        {/* />*/}
         {status === 'recording' ? (
           <Button
             type="default"

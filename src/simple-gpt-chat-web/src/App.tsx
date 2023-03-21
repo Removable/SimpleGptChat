@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AuthChecker from './components/AuthChecker';
 import ChatSignalRProvider from './hooks/ChatSignalR/chatSignalRProvider';
 import ChatPage from './pages/ChatPage';
+import ToolsIndex from './pages/ToolsIndex';
 import TranslatePage from './pages/TranslatePage';
 import Root from './Root';
 
@@ -30,8 +31,9 @@ function App() {
             <ChatSignalRProvider>
               <BrowserRouter>
                 <Routes>
+                  <Route path={'/'} element={<ToolsIndex />} />
                   <Route element={<Root />}>
-                    <Route path={'/'} element={<ChatPage />} />
+                    <Route path={'/chat'} element={<ChatPage />} />
                     <Route path={'/translate'} element={<TranslatePage />} />
                   </Route>
                 </Routes>
