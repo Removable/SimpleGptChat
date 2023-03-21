@@ -21,3 +21,7 @@
   color: #6b7280;
   font-weight: 400;
 }
+
+.ant-spin-nested-loading {
+    width: 100%;
+}
