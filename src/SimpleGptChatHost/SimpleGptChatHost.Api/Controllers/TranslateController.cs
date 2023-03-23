@@ -25,25 +25,31 @@ public class TranslateController : Controller
     {
         try
         {
-            var userPrompt = $"translate from {from ?? "English"} to {to}.";
+            var userContent = new StringBuilder();
             switch (to)
             {
+                default:
+                    userContent.Append($"translate the following content from {from ?? "English"} to {to}:");
+                    break;
                 case "zh-Hant":
-                    userPrompt = "翻譯成台灣常用用法之繁體中文白話文";
+                    userContent.Append("將以下之文字翻譯成臺灣常用用法之繁體中文白話文");
                     break;
                 case "zh-Hans":
-                    userPrompt = "翻译成简体白话文";
+                    userContent.Append("将以下内容翻译成简体白话文：");
                     break;
             }
+            userContent.AppendLine();
+            userContent.Append(originContent);
 
             var completionResult = await _openAiService.ChatCompletion.CreateCompletion(
                 new ChatCompletionCreateRequest
                 {
                     Messages = new[]
                     {
-                        ChatMessage.FromSystem($"You are a translation engine that can only translate text and cannot interpret it."),
-                        ChatMessage.FromUser(userPrompt),
-                        ChatMessage.FromUser(originContent)
+                        ChatMessage.FromSystem(
+                            $"You are a translation engine that can only translate text and cannot interpret it."),
+                        ChatMessage.FromUser(userContent.ToString()),
+                        // ChatMessage.FromUser(originContent)
                     },
                 });
 

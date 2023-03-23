@@ -5,12 +5,12 @@ import { Button, message, Select } from 'antd';
 import { useSetAtom } from 'jotai';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 
-import { leftSiderElementAtom } from '../jotai-state';
-import { myAxios } from '../my-axios';
+import { leftSiderElementAtom } from '../../jotai-state';
+import { myAxios } from '../../my-axios';
 
 const { Option } = Select;
 
-const TranslatePage = () => {
+export const TranslatePage = () => {
   const setLeftSiderElement = useSetAtom(leftSiderElementAtom);
   const [charCount, setCharCount] = useState(0);
   const [userInput, setUserInput] = useState('');
@@ -133,5 +133,3 @@ const TranslatePage = () => {
     </div>
   );
 };
-
-export default TranslatePage;
