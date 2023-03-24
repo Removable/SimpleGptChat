@@ -172,7 +172,11 @@ export const ChatBox = (props: ChatBoxProps) => {
                               <p
                                 className={className}
                                 {...props}
-                                style={{ wordWrap: 'break-word', width: '100%' }}
+                                style={{
+                                  wordWrap: 'break-word',
+                                  width: '100%',
+                                  display: 'inline',
+                                }}
                               >
                                 {children}
                               </p>

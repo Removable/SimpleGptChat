@@ -22,6 +22,22 @@
   font-weight: 400;
 }
 
+.markdown ul {
+  display: flex;
+  flex-direction: column;
+  padding-left: 1rem;
+  margin: 10px;
+}
+
+.markdown ul li:before {
+  content: '•';
+  color: #6b7280;
+  font-weight: 400;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+}
+
 .ant-spin-nested-loading {
   width: 100%;
 }
