@@ -17,6 +17,6 @@ public record ChatInfo
     public ChatRole Role { get; }
 
     public long TimeStamp { get; }
-    
+
     public bool? Streaming { get; }
 }

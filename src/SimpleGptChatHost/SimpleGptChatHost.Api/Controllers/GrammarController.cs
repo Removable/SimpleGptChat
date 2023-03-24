@@ -38,10 +38,10 @@ public class GrammarController : Controller
                 {
                     Messages = new[]
                     {
-                        ChatMessage.FromSystem($"You are a spelling corrector, grammar checker and improver."),
+                        ChatMessage.FromSystem("You are a spelling corrector, grammar checker and improver."),
                         ChatMessage.FromUser(userPrompt),
                         ChatMessage.FromUser(originContent)
-                    },
+                    }
                 });
 
             if (completionResult.Successful && completionResult.Choices.FirstOrDefault() is { } choice)

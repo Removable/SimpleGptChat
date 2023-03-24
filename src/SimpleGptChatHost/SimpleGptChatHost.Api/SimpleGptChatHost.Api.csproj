@@ -1,23 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <DockerComposeProjectPath>../docker-compose.dcproj</DockerComposeProjectPath>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerComposeProjectPath>../docker-compose.dcproj</DockerComposeProjectPath>
+    </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <NoWarn>1701;1702;IL2121;1591;1584</NoWarn>
-  </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <NoWarn>1701;1702;IL2121;1591;1584</NoWarn>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.14" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.14"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\OpenAI.SDK\OpenAI.SDK\OpenAI.GPT3.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\OpenAI.SDK\OpenAI.SDK\OpenAI.GPT3.csproj"/>
+    </ItemGroup>
 
 </Project>

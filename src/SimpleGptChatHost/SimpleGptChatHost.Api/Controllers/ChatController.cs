@@ -15,8 +15,8 @@ namespace SimpleGptChatHost.Api.Controllers;
 [Route("api/[controller]/[action]")]
 public class ChatController : Controller
 {
-    private readonly IOpenAIService _openAiService;
     private readonly IHubContext<ChatHub> _chatHubContext;
+    private readonly IOpenAIService _openAiService;
 
     public ChatController(IOpenAIService openAiService, IHubContext<ChatHub> chatHubContext)
     {
@@ -31,26 +31,26 @@ public class ChatController : Controller
 
         try
         {
-            var completionResult = _openAiService.ChatCompletion.CreateCompletionAsStream(new ChatCompletionCreateRequest
-            {
-                Messages = arg.ChatInfos.OrderBy(c => c.TimeStamp).Select(c =>
+            var completionResult = _openAiService.ChatCompletion.CreateCompletionAsStream(
+                new ChatCompletionCreateRequest
                 {
-                    switch (c.Role)
+                    Messages = arg.ChatInfos.OrderBy(c => c.TimeStamp).Select(c =>
                     {
-                        default:
-                        case ChatRole.User:
-                            return ChatMessage.FromUser(c.Message);
-                        case ChatRole.Bot:
-                            return ChatMessage.FromAssistant(c.Message);
-                        case ChatRole.System:
-                            return ChatMessage.FromSystem(c.Message);
-                    }
-                }).ToList()
-            });
+                        switch (c.Role)
+                        {
+                            default:
+                            case ChatRole.User:
+                                return ChatMessage.FromUser(c.Message);
+                            case ChatRole.Bot:
+                                return ChatMessage.FromAssistant(c.Message);
+                            case ChatRole.System:
+                                return ChatMessage.FromSystem(c.Message);
+                        }
+                    }).ToList()
+                });
 
             var sb = new StringBuilder();
             await foreach (var completion in completionResult)
-            {
                 if (completion.Successful && completion.Choices.FirstOrDefault() is { } choice)
                 {
                     var msg = choice.Message.Content ?? "";
@@ -59,12 +59,8 @@ public class ChatController : Controller
                 }
                 else
                 {
-                    if (completion.Error == null)
-                    {
-                        throw new Exception("Unknown error");
-                    }
+                    if (completion.Error == null) throw new Exception("Unknown error");
                 }
-            }
 
             await _chatHubContext.Clients.User(username)
                 .SendAsync("StreamChatMsg", string.Empty, timestamp, "0");
@@ -101,10 +97,7 @@ public class ChatController : Controller
         if (string.IsNullOrWhiteSpace(User.Identity?.Name))
             return Unauthorized();
 
-        if (file.Length == 0)
-        {
-            return BadRequest("No file was uploaded.");
-        }
+        if (file.Length == 0) return BadRequest("No file was uploaded.");
 
         // file to byte[]
         using var memoryStream = new MemoryStream();
@@ -126,9 +119,7 @@ public class ChatController : Controller
             var resultText = transcriptionResponse.Result.Text;
             return Ok(resultText);
         }
-        else
-        {
-            return Problem();
-        }
+
+        return Problem();
     }
 }

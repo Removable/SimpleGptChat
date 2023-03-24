@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenAI.GPT3.Interfaces;
 using OpenAI.GPT3.ObjectModels.RequestModels;
-using SimpleGptChatHost.Api.Enums;
 
 namespace SimpleGptChatHost.Api.Controllers;
 
@@ -38,6 +37,7 @@ public class TranslateController : Controller
                     userContent.Append("将以下内容翻译成简体白话文：");
                     break;
             }
+
             userContent.AppendLine();
             userContent.Append(originContent);
 
@@ -47,10 +47,9 @@ public class TranslateController : Controller
                     Messages = new[]
                     {
                         ChatMessage.FromSystem(
-                            $"You are a translation engine that can only translate text and cannot interpret it."),
-                        ChatMessage.FromUser(userContent.ToString()),
-                        // ChatMessage.FromUser(originContent)
-                    },
+                            "You are a translation engine that can only translate text and cannot interpret it."),
+                        ChatMessage.FromUser(userContent.ToString())
+                    }
                 });
 
             if (completionResult.Successful && completionResult.Choices.FirstOrDefault() is { } choice)

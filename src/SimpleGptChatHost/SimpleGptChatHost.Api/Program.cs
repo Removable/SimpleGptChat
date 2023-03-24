@@ -39,7 +39,10 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddSignalR().AddJsonProtocol(options => { options.PayloadSerializerOptions.PropertyNamingPolicy = null; });
+builder.Services.AddSignalR().AddJsonProtocol(options =>
+{
+    options.PayloadSerializerOptions.PropertyNamingPolicy = null;
+});
 
 #region Add Authentication
 

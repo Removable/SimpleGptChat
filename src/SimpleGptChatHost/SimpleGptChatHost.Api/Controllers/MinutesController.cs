@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenAI.GPT3.Interfaces;
 using OpenAI.GPT3.ObjectModels.RequestModels;
-using SimpleGptChatHost.Api.Models;
 
 namespace SimpleGptChatHost.Api.Controllers;
 
@@ -46,10 +45,7 @@ public class MinutesController : Controller
             {
                 var text =
                     JsonSerializer.Deserialize<TranscriptionResponseText>(transcriptionResponse.Text);
-                if (string.IsNullOrWhiteSpace(text?.Text))
-                {
-                    return Problem();
-                }
+                if (string.IsNullOrWhiteSpace(text?.Text)) return Problem();
 
                 return Ok(text.Text);
             }
@@ -65,5 +61,10 @@ public class MinutesController : Controller
 
 internal class TranscriptionResponseText
 {
+    public TranscriptionResponseText(string text)
+    {
+        Text = text;
+    }
+
     [JsonPropertyName("text")] public string Text { get; set; }
 }
