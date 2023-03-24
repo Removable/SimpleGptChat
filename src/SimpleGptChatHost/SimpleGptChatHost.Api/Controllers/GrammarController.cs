@@ -26,13 +26,12 @@ public class GrammarController : Controller
         {
             improveStyle = improveStyle switch
             {
-                "standard" => string.Empty,
-                "expand" => " and expand them",
-                "contract" => " and contract them",
-                _ => $" that would make them more {improveStyle}"
+                "标准" => "一下",
+                _ => $"得更{improveStyle}一些"
             };
             var userPrompt =
-                $"I would like you to do some grammar and spelling checks on the sentences I input and give suggestions on style, tone, and sentence structure{improveStyle} without changing their original meaning. I want you to only reply the correction, the improvements and nothing else, do not write explanations.";
+                $"我是非英语母语使用者，我希望你能协助我检查并修正句子中的语法等错误, 并在不改变原有意思的情况下将其润色{improveStyle}。 同时，我希望你只回复修改后的内容，不要回复任何其他内容，也不要写解释。";
+                // $"I would like you to do some grammar and spelling checks on the sentences I input and give suggestions on style, tone, and sentence structure{improveStyle} without changing their original meaning. I want you to only reply the correction, the improvements and nothing else, do not write explanations.";
             var completionResult = await _openAiService.ChatCompletion.CreateCompletion(
                 new ChatCompletionCreateRequest
                 {

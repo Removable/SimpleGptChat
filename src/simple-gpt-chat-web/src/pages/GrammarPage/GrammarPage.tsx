@@ -14,7 +14,7 @@ export const GrammarPage = () => {
   const [charCount, setCharCount] = useState(0);
   const [userInput, setUserInput] = useState('');
   const [improveResult, setImproveResult] = useState<JSX.Element[]>([]);
-  const [selectedStyle, setSelectedStyle] = useState('standard');
+  const [selectedStyle, setSelectedStyle] = useState('标准');
 
   const onRadioChange = (e: RadioChangeEvent) => {
     setSelectedStyle(e.target.value);
@@ -90,11 +90,11 @@ export const GrammarPage = () => {
                 buttonStyle="solid"
                 onChange={onRadioChange}
               >
-                <Radio.Button value="standard">标准</Radio.Button>
-                <Radio.Button value="fluent">流畅</Radio.Button>
-                <Radio.Button value="formal">正式</Radio.Button>
-                <Radio.Button value="simple">简洁</Radio.Button>
-                <Radio.Button value="creative">创造力</Radio.Button>
+                <Radio.Button value="标准">标准</Radio.Button>
+                <Radio.Button value="流畅">流畅</Radio.Button>
+                <Radio.Button value="正式">正式</Radio.Button>
+                <Radio.Button value="简洁">简洁</Radio.Button>
+                <Radio.Button value="有创造力">创造力</Radio.Button>
               </Radio.Group>
             </div>
           </div>
