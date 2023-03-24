@@ -333,7 +333,6 @@ const AudioRecorder = (props: AudioRecorderProps) => {
       type: 'audio/mp3',
     },
     onStop: (blobUrl, blob) => {
-      console.log(blob);
       setAudioBlob(blob);
     },
   });

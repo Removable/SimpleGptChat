@@ -10,35 +10,38 @@ namespace SimpleGptChatHost.Api.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class GrammarController : Controller
+public class CodePlayground : Controller
 {
     private readonly IOpenAIService _openAiService;
 
-    public GrammarController(IOpenAIService openAiService)
+    public CodePlayground(IOpenAIService openAiService)
     {
         _openAiService = openAiService;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Improve([FromForm] string originContent, [FromForm] string improveStyle)
+    public async Task<IActionResult> Play([FromForm] string code, [FromForm] string language)
     {
         try
         {
-            improveStyle = improveStyle switch
+            var userPrompt = language switch
             {
-                "标准" => "一下",
-                _ => $"得更{improveStyle}一些"
+                "Javascript" => "我要你充当Javascript的console。我输入Javascript代码",
+                "C#" => "我要你充当C# Playground。我输入C#代码",
+                "Python" => "我要你充当Python的interpreter。我输入Python代码",
+                "PHP" => "我要你充当PHP的interpreter。我输入PHP代码",
+                _ => "我要你充当终端。我输入代码"
             };
-            var userPrompt =
-                $"我是非英语母语使用者，我希望你能协助我检查并修正句子中的语法等错误, 并在不改变原有意思的情况下将其润色{improveStyle}。 同时，我希望你只回复修改后的内容，不要回复任何其他内容，也不要写解释。";
+            userPrompt += "，你将显示会在控制台出现的内容。我希望你只在一个唯一的代码块内回复终端输出。不要写解释，或其他任何内容，除非我明确说明要这样做。";
+
             var completionResult = await _openAiService.ChatCompletion.CreateCompletion(
                 new ChatCompletionCreateRequest
                 {
                     Messages = new[]
                     {
-                        ChatMessage.FromSystem("You are a spelling corrector, grammar checker and improver."),
+                        ChatMessage.FromSystem("You are a helpful assistant."),
                         ChatMessage.FromUser(userPrompt),
-                        ChatMessage.FromUser(originContent)
+                        ChatMessage.FromUser(code)
                     }
                 });
 

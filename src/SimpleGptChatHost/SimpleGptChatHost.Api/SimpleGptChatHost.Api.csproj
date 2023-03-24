@@ -12,12 +12,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.14"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.14" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\OpenAI.SDK\OpenAI.SDK\OpenAI.GPT3.csproj"/>
+        <ProjectReference Include="..\OpenAI.SDK\OpenAI.SDK\OpenAI.GPT3.csproj" />
     </ItemGroup>
 
 </Project>

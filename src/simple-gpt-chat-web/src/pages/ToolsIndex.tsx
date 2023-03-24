@@ -23,6 +23,12 @@ const tools: ToolCardProps[] = [
     route: '/grammar',
   },
   {
+    title: '代码运行器',
+    description: 'Code Playground',
+    bgColor: '#f8bb35',
+    route: '/playground',
+  },
+  {
     title: '开发中...',
     description: '欢迎提供你的创意~',
     bgColor: '#3c24b3',
