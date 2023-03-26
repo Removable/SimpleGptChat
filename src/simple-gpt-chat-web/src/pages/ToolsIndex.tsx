@@ -29,6 +29,12 @@ const tools: ToolCardProps[] = [
     route: '/playground',
   },
   {
+    title: '菜谱推荐',
+    description: '随机或根据已有食材推荐',
+    bgColor: '#44c416',
+    route: '/cookbook',
+  },
+  {
     title: '开发中...',
     description: '欢迎提供你的创意~',
     bgColor: '#3c24b3',
