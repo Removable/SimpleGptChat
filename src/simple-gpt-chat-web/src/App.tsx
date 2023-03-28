@@ -28,33 +28,33 @@ const oidcConfig: OidcConfiguration = {
 function App() {
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<RootWithAuth />}>
+      <OidcProvider configuration={oidcConfig}>
+        <BrowserRouter>
+          <Routes>
             <Route path={'/'} element={<ToolsIndex />} />
-            <Route path={'/chat'} element={<ChatPage />} />
-            <Route path={'/translate'} element={<TranslatePage />} />
-            <Route path={'/grammar'} element={<GrammarPage />} />
-            <Route path={'/playground'} element={<CodePlayground />} />
-          </Route>
-          <Route path={'/cookbook'} element={<Cookbook />} />
-        </Routes>
-      </BrowserRouter>
+            <Route element={<RootWithAuth />}>
+              <Route path={'/chat'} element={<ChatPage />} />
+              <Route path={'/translate'} element={<TranslatePage />} />
+              <Route path={'/grammar'} element={<GrammarPage />} />
+              <Route path={'/playground'} element={<CodePlayground />} />
+            </Route>
+            <Route path={'/cookbook'} element={<Cookbook />} />
+          </Routes>
+        </BrowserRouter>
+      </OidcProvider>
     </>
   );
 }
 
 const RootWithAuth = () => {
   return (
-    <OidcProvider configuration={oidcConfig}>
-      <AuthChecker>
-        <OidcSecure>
-          <ChatSignalRProvider>
-            <Root />
-          </ChatSignalRProvider>
-        </OidcSecure>
-      </AuthChecker>
-    </OidcProvider>
+    <AuthChecker>
+      <OidcSecure>
+        <ChatSignalRProvider>
+          <Root />
+        </ChatSignalRProvider>
+      </OidcSecure>
+    </AuthChecker>
   );
 };
 

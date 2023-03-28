@@ -1,84 +1,128 @@
-import { SearchOutlined } from '@ant-design/icons';
-import { Button, Input, InputNumber, Layout, List, Typography } from 'antd';
-import React, { useState } from 'react';
+import { useOidc } from '@axa-fr/react-oidc';
+import { useRequest, useTitle } from 'ahooks';
+import { Button, Modal, Select, SelectProps, Space, Tabs, TabsProps } from 'antd';
+import React, { useEffect, useState } from 'react';
 
-const { Header, Content, Footer } = Layout;
-const { Title } = Typography;
+import TagSelect from '../../components/TagSelect';
+import { myAxios } from '../../my-axios';
 
-function Cookbook() {
-  const [recipeCount, setRecipeCount] = useState(0);
-  const [ingredients, setIngredients] = useState('');
-  const [recipes, setRecipes] = useState<string[]>([]);
+const Cookbook = () => {
+  useTitle('AI菜谱推荐');
+  const auth = useOidc();
+  const tabItems: TabsProps['items'] = [
+    {
+      key: '1',
+      label: '根据食材推荐',
+      children: <OnDemandTab />,
+    },
+    {
+      key: '2',
+      label: '随机推荐',
+      children: <RandomTab />,
+    },
+  ];
 
-  const fetchRecipes = async () => {
-    // 在此处调用API或其他方法获取菜谱数据，将数据赋值给recipes
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      // 设置返回按钮
+    }
+    return () => {
+      if (auth.isAuthenticated) {
+        // 清除返回按钮
+      }
+    };
+  });
+
+  return (
+    <div className="w-screen h-screen bg-white md:p-5 p-1">
+      <Tabs defaultActiveKey="1" items={tabItems} />
+    </div>
+  );
+};
+
+const OnDemandTab = () => {
+  const [options, setOptions] = useState<SelectProps['options']>([]);
+  const [selected, setSelected] = useState<string[]>([]);
+
+  const handleChange = (value: { value: string; label: React.ReactNode }) => {
+    // setSelected([...value.label]);
+    console.log(value.label);
   };
 
-  const handleRandomSubmit = async () => {
-    await fetchRecipes();
+  const getIngredients = (keyword: string) => {
+    return myAxios.get<IngredientInfo[]>(
+      '/api/Cookbook/GetIngredients?keyword=' + keyword,
+    );
+  };
+  const getIngredientsRequest = useRequest(getIngredients, {
+    manual: true,
+    debounceWait: 500,
+  });
+
+  const handleSearch = async (newValue: string) => {
+    if (newValue) {
+      const res = await getIngredientsRequest.runAsync(newValue);
+      if (!res.data) return;
+
+      const newOptions = res.data.map((item) => ({
+        label: item.name,
+        value: item.pinyin,
+      }));
+      console.log(newOptions);
+      setOptions(newOptions);
+    } else {
+      setOptions([]);
+    }
   };
 
-  const handleIngredientSubmit = async () => {
-    await fetchRecipes();
+  const handleClear = () => {
+    Modal.confirm({
+      title: '确定清空吗？',
+      onOk: () => {
+        setSelected([]);
+      },
+    });
   };
 
   return (
-    <Layout className="App">
-      <Header>
-        <Title level={2} style={{ color: 'white' }}>
-          家常菜推荐
-        </Title>
-      </Header>
-      <Content style={{ padding: '50px' }}>
-        <div className="random-recipe">
-          <Title level={4}>随机推荐家常菜</Title>
-          <InputNumber
-            value={recipeCount}
-            onChange={(value) => setRecipeCount(value ?? 0)}
-            placeholder="推荐菜谱数量"
-          />
-          <Button type="primary" icon={<SearchOutlined />} onClick={handleRandomSubmit}>
-            获取推荐
+    <div>
+      <div className="w-full flex flex-col">
+        <Select
+          size="large"
+          optionFilterProp="label"
+          mode="tags"
+          style={{ width: '100%' }}
+          placeholder="选择食材 - 可以搜索选择也可以自定义输入"
+          onChange={handleChange}
+          onSearch={handleSearch}
+          // value={selected}
+          options={options || []}
+        />
+        <TagSelect
+          className="mt-4"
+          placeholder="选择食材 - 可以搜索选择也可以自定义输入"
+        />
+      </div>
+      <div className="w-full flex justify-end p-3">
+        <Space>
+          <Button type="default" danger onClick={handleClear}>
+            清空
           </Button>
-        </div>
-        <div className="ingredient-recipe">
-          <Title level={4}>根据食材设计家常菜</Title>
-          <Input
-            value={ingredients}
-            onChange={(e) => setIngredients(e.target.value)}
-            placeholder="请输入食材清单，用逗号隔开"
-          />
-          <InputNumber
-            value={recipeCount}
-            onChange={(value) => setRecipeCount(value ?? 0)}
-            placeholder="设计菜谱数量"
-          />
-          <Button
-            type="primary"
-            icon={<SearchOutlined />}
-            onClick={handleIngredientSubmit}
-          >
-            获取菜谱
-          </Button>
-        </div>
-        <div className="recipe-list">
-          <Title level={4}>推荐菜谱</Title>
-          {recipes.length === 0 ? (
-            <p>暂无推荐菜谱，请使用上面的功能获取推荐。</p>
-          ) : (
-            <List
-              grid={{ gutter: 16, column: 4 }}
-              dataSource={recipes}
-              renderItem={(recipe) => <List.Item></List.Item>}
-            />
-          )}
-        </div>
-      </Content>
-      <Footer style={{ textAlign: 'center' }}>
-        ©2023 家常菜推荐. All rights reserved. 联系我们：contact@example.com
-      </Footer>
-    </Layout>
+          <Button type="primary">问问AI</Button>
+        </Space>
+      </div>
+      <div></div>
+    </div>
   );
-}
+};
+
+const RandomTab = () => {
+  return <div>random</div>;
+};
 
 export default Cookbook;
+
+interface IngredientInfo {
+  name: string;
+  pinyin: string;
+}

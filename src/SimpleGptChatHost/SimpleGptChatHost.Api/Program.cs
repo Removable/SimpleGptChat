@@ -1,3 +1,5 @@
+using System.Configuration;
+using System.Data.SQLite;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
@@ -89,6 +91,8 @@ builder.Services.AddOpenAIService(options =>
     options.ApiKey = builder.Configuration.GetSection("OpenAiApiKey").Get<string>();
     options.DefaultModelId = Models.ChatGpt3_5Turbo;
 });
+
+builder.Services.AddScoped<SQLiteConnection>(_ => new SQLiteConnection(builder.Configuration.GetConnectionString("SQLiteConnection")));
 
 var app = builder.Build();
 
