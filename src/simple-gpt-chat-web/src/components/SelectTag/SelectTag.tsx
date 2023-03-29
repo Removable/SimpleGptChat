@@ -11,7 +11,8 @@ const SelectTag = (props: SelectTagProps) => {
       <div className="w-[20px] h-full flex justify-center items-center">
         <CloseSvg
           style={{ color: '#919191', cursor: 'pointer', fontSize: '12px' }}
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             if (props.onClose) {
               props.onClose(props.value || props.label);
             }

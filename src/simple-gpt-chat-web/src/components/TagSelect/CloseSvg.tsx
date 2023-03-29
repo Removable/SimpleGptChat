@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { MouseEvent } from 'react';
 
 export const CloseSvg = (props: {
   style?: React.CSSProperties;
-  onClick?: () => void;
+  onClick?: (e: MouseEvent<SVGSVGElement>) => void;
 }) => {
   return (
     <svg

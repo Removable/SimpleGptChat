@@ -1,12 +1,14 @@
-import React, { useRef, useState } from 'react';
+import './TagSelect.css';
+
+import { useToggle } from 'ahooks';
+import React, { useEffect, useRef, useState } from 'react';
 
 import SelectTag from '../SelectTag/SelectTag';
 import { ArrowSvg } from './ArrowSvg';
 
-const SelectHeight = 80;
-
 export const TagSelect = (props: TagSelectProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useToggle(false);
+  const [inputVal, setInputVal] = useState('');
   const [tags, setTags] = useState<string[]>([
     '食材1',
     '食材2',
@@ -19,14 +21,23 @@ export const TagSelect = (props: TagSelectProps) => {
     '食材9',
     '食材a',
   ]);
+  const [options, setOptions] = useState<SelectOption[]>([
+    { value: '食材1', label: '食材1' },
+    { value: '食材2', label: '食材2' },
+    { value: '食材3', label: '食材3' },
+    { value: '食材4', label: '食材4' },
+    { value: '食材5', label: '食材5' },
+  ]);
   const inputRef = useRef<HTMLInputElement>(null);
-  const divRef = useRef<HTMLDivElement>(null);
+  const containerDivRef = useRef<HTMLDivElement>(null);
+  const bodyDivRef = useRef<HTMLDivElement>(null);
+  const spanRef = useRef<HTMLSpanElement>(null);
 
   const handleClick = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-    setIsOpen(!isOpen);
+    setIsOpen.toggle();
   };
 
   const handleCloseTag = (val: string) => {
@@ -39,41 +50,92 @@ export const TagSelect = (props: TagSelectProps) => {
     setTags(tempTags);
   };
 
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    if (!inputRef.current || !spanRef.current) return;
+    const { value, style } = event.target;
+    spanRef.current.textContent = value;
+    setInputVal(value);
+    const width = spanRef.current.offsetWidth <= 0 ? 2 : spanRef.current.offsetWidth;
+    style.width = width + 'px';
+  }
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      isOpen &&
+      containerDivRef?.current &&
+      event.target &&
+      !containerDivRef.current.contains(event.target as Node)
+    ) {
+      setIsOpen.toggle();
+    } else {
+      // handleTest();
+    }
+  };
+
+  const handleTest = () => {
+    const tempTags = [...tags];
+    tempTags.push('食材' + tags.length + 1);
+    setTags(tempTags);
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [bodyDivRef, isOpen]);
+
   // React.useEffect(() => {
-  //   setTags([
-  //     ,
-  //   ]);
-  // });
+  //   if (inputRef?.current) {
+  //     inputRef.current.style.width = tags.length <= 0 ? '100%' : '25px';
+  //   }
+  // }, [tags]);
 
   return (
-    <div className={props.className} style={props.style}>
+    <>
       <div
-        className={`h-full w-full h-[${SelectHeight}px] min-w-[50px] overflow-auto rounded-[6px] border border-[#d9d9d9] hover:border-[#4096ff] transition duration-200 flex flex-row cursor-text`}
-        onClick={handleClick}
+        className={`select-container ${props.className ?? ''}`}
+        style={props.style}
+        ref={containerDivRef}
       >
-        <div className="flex-none w-[calc(100%-25px)]">
-          <div ref={divRef} className="w-full flex flex-row flex-wrap justify-start">
-            {tags.map((tag) => (
-              <SelectTag key={tag} label={tag} onClose={handleCloseTag} />
-            ))}
-            <input
-              ref={inputRef}
-              className={`h-full ${
-                tags.length <= 0 ? 'w-full' : 'w-[25px]'
-              } p-2 placeholder-black/25 text-base focus:outline-none border-none`}
-              placeholder={tags.length <= 0 ? props.placeholder : ''}
-            />
+        <div className="select-body-container" onClick={handleClick}>
+          <div className="select-body-inner-container">
+            <div ref={bodyDivRef} className="select-body-inner-tags-container">
+              {tags.map((tag) => (
+                <SelectTag key={tag} label={tag} onClose={handleCloseTag} />
+              ))}
+              <div>
+                <input
+                  value={inputVal}
+                  ref={inputRef}
+                  className="select-body-inner-input"
+                  style={{ width: tags.length <= 0 ? '100%' : '2px' }}
+                  placeholder={tags.length <= 0 ? props.placeholder : ''}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="select-body-inner-arrow">
+            <ArrowSvg />
           </div>
         </div>
-        <div
-          className={`w-[25px] h-[${
-            divRef?.current?.scrollHeight ?? 38
-          }px] flex justify-start items-center`}
-        >
-          <ArrowSvg style={{ color: '#d9d9d9' }} />
-        </div>
+        {isOpen && (
+          <div className="select-options-container">
+            {options.length <= 0 ? (
+              <>123</>
+            ) : (
+              options.map((option) => (
+                <div className="select-option" key={option.value}>
+                  {option.label}
+                </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
-    </div>
+      <span className="hidden-span" ref={spanRef} />
+    </>
   );
 };
 
@@ -81,4 +143,9 @@ interface TagSelectProps {
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
+}
+
+interface SelectOption {
+  label: string;
+  value: string;
 }
