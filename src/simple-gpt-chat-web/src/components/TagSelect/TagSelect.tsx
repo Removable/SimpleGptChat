@@ -5,28 +5,26 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import SelectTag from '../SelectTag/SelectTag';
 import { ArrowSvg } from './ArrowSvg';
+import { CheckedSvg } from './CheckedSvg';
 
 export const TagSelect = (props: TagSelectProps) => {
   const [isOpen, setIsOpen] = useToggle(false);
   const [inputVal, setInputVal] = useState('');
-  const [tags, setTags] = useState<string[]>([
-    '食材1',
-    '食材2',
-    '食材3',
-    '食材4',
-    '食材5',
-    '食材6',
-    '食材7',
-    '食材8',
-    '食材9',
-    '食材a',
-  ]);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [options, setOptions] = useState<SelectOption[]>([
     { value: '食材1', label: '食材1' },
     { value: '食材2', label: '食材2' },
     { value: '食材3', label: '食材3' },
     { value: '食材4', label: '食材4' },
     { value: '食材5', label: '食材5' },
+    { value: '食材6', label: '食材6' },
+    { value: '食材7', label: '食材7' },
+    { value: '食材8', label: '食材8' },
+    { value: '食材9', label: '食材9' },
+    { value: '食材10', label: '食材10' },
+    { value: '食材11', label: '食材11' },
+    { value: '食材12', label: '食材12' },
+    { value: '食材13', label: '食材13' },
   ]);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerDivRef = useRef<HTMLDivElement>(null);
@@ -42,12 +40,12 @@ export const TagSelect = (props: TagSelectProps) => {
 
   const handleCloseTag = (val: string) => {
     alert(val);
-    const tempTags = [...tags];
+    const tempTags = [...selectedItems];
     const valIdx: number = tempTags.indexOf(val);
     if (valIdx > -1) {
       tempTags.splice(valIdx, 1);
     }
-    setTags(tempTags);
+    setSelectedItems(tempTags);
   };
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -67,15 +65,19 @@ export const TagSelect = (props: TagSelectProps) => {
       !containerDivRef.current.contains(event.target as Node)
     ) {
       setIsOpen.toggle();
-    } else {
-      // handleTest();
     }
   };
 
-  const handleTest = () => {
-    const tempTags = [...tags];
-    tempTags.push('食材' + tags.length + 1);
-    setTags(tempTags);
+  const handleSelectOption = (option: SelectOption) => {
+    const tempTags = [...selectedItems];
+
+    const valIdx: number = tempTags.indexOf(option.value);
+    if (valIdx === -1) {
+      tempTags.push(option.value);
+    } else {
+      tempTags.splice(valIdx, 1);
+    }
+    setSelectedItems(tempTags);
   };
 
   useEffect(() => {
@@ -101,16 +103,24 @@ export const TagSelect = (props: TagSelectProps) => {
         <div className="select-body-container" onClick={handleClick}>
           <div className="select-body-inner-container">
             <div ref={bodyDivRef} className="select-body-inner-tags-container">
-              {tags.map((tag) => (
+              {selectedItems.map((tag) => (
                 <SelectTag key={tag} label={tag} onClose={handleCloseTag} />
               ))}
-              <div>
+              <div
+                style={
+                  selectedItems.length <= 0
+                    ? { width: '100%', marginLeft: '10px' }
+                    : {
+                        width: '2px',
+                        marginLeft: '2px',
+                      }
+                }
+              >
                 <input
                   value={inputVal}
                   ref={inputRef}
                   className="select-body-inner-input"
-                  style={{ width: tags.length <= 0 ? '100%' : '2px' }}
-                  placeholder={tags.length <= 0 ? props.placeholder : ''}
+                  placeholder={selectedItems.length <= 0 ? props.placeholder : ''}
                   onChange={handleChange}
                 />
               </div>
@@ -125,11 +135,26 @@ export const TagSelect = (props: TagSelectProps) => {
             {options.length <= 0 ? (
               <>123</>
             ) : (
-              options.map((option) => (
-                <div className="select-option" key={option.value}>
-                  {option.label}
-                </div>
-              ))
+              options.map((option) => {
+                const selected = selectedItems.indexOf(option.value) > -1;
+                return (
+                  <div
+                    className={
+                      'select-option' +
+                      (selected ? ' select-option-selected' : ' select-option-normal')
+                    }
+                    key={option.value}
+                    onClick={() => handleSelectOption(option)}
+                  >
+                    {option.label}
+                    <CheckedSvg
+                      style={{
+                        visibility: selected ? 'visible' : 'hidden',
+                      }}
+                    />
+                  </div>
+                );
+              })
             )}
           </div>
         )}

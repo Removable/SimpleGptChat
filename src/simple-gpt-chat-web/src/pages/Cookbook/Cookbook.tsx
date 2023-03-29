@@ -65,8 +65,8 @@ const OnDemandTab = () => {
       if (!res.data) return;
 
       const newOptions = res.data.map((item) => ({
-        label: item.name,
-        value: item.pinyin,
+        label: item.Name,
+        value: item.PinYin,
       }));
       console.log(newOptions);
       setOptions(newOptions);
@@ -123,6 +123,6 @@ const RandomTab = () => {
 export default Cookbook;
 
 interface IngredientInfo {
-  name: string;
-  pinyin: string;
+  Name: string;
+  PinYin: string;
 }

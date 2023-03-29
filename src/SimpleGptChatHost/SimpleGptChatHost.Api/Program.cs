@@ -1,15 +1,15 @@
-using System.Configuration;
-using System.Data.SQLite;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OpenAI.GPT3.Extensions;
 using OpenAI.GPT3.ObjectModels;
 using SimpleGptChatHost.Api;
 using SimpleGptChatHost.Api.Hubs;
+using SimpleGptChatHost.Api.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var origins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
@@ -41,10 +41,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddSignalR().AddJsonProtocol(options =>
-{
-    options.PayloadSerializerOptions.PropertyNamingPolicy = null;
-});
+builder.Services.AddSignalR().AddJsonProtocol(options => { options.PayloadSerializerOptions.PropertyNamingPolicy = null; });
 
 #region Add Authentication
 
@@ -92,7 +89,8 @@ builder.Services.AddOpenAIService(options =>
     options.DefaultModelId = Models.ChatGpt3_5Turbo;
 });
 
-builder.Services.AddScoped<SQLiteConnection>(_ => new SQLiteConnection(builder.Configuration.GetConnectionString("SQLiteConnection")));
+var connectionString = builder.Configuration.GetConnectionString("SQLiteConnection");
+builder.Services.AddDbContext<SQLiteDbContext>(options => options.UseSqlite(connectionString));
 
 var app = builder.Build();
 

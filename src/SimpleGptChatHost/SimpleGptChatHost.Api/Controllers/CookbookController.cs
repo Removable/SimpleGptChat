@@ -1,7 +1,7 @@
-using System.Data;
-using System.Data.SQLite;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SimpleGptChatHost.Api.Models;
 
 namespace SimpleGptChatHost.Api.Controllers;
 
@@ -10,42 +10,41 @@ namespace SimpleGptChatHost.Api.Controllers;
 [Route("api/[controller]/[action]")]
 public class CookbookController : Controller
 {
-    private readonly SQLiteConnection _connection;
+    private readonly SQLiteDbContext _dbContext;
 
-    public CookbookController(SQLiteConnection connection)
+    public CookbookController(SQLiteDbContext dbContext)
     {
-        _connection = connection;
+        _dbContext = dbContext;
     }
 
     [HttpGet]
     [AllowAnonymous]
-    public IActionResult GetIngredients(string keyword)
+    public async Task<IActionResult> GetIngredients(string keyword)
     {
-        var matchedIngredients = new List<dynamic>(210);
-        _connection.Open();
-        const string selectSql =
-            "SELECT name, pinyin FROM Ingredients t WHERE t.name LIKE @keyword or t.pinyin LIKE @keyword or t.initial LIKE @keyword";
-        using (var command = new SQLiteCommand(selectSql, _connection))
-        {
-            command.Parameters.Add(new SQLiteParameter("@keyword", DbType.String) { Value = $"%{keyword}%" });
+        var selectSql =
+            $"SELECT * FROM Ingredients t WHERE t.name LIKE '%{keyword}%' or t.pinyin LIKE '%{keyword}%' or t.initial LIKE '%{keyword}%'";
+        var ingredients = await _dbContext.Ingredients.FromSqlRaw(selectSql).ToArrayAsync();
 
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    var name = reader["name"]?.ToString();
-                    var pinyin = reader["pinyin"]?.ToString();
-                    if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(pinyin)) continue;
-                    matchedIngredients.Add(new
-                    {
-                        name,
-                        pinyin
-                    });
-                }
-            }
-        }
+        // using (var command = new SQLiteCommand(selectSql, _dbContext))
+        // {
+        //     command.Parameters.Add(new SQLiteParameter("@keyword", DbType.String) { Value = $"%{keyword}%" });
+        //
+        //     using (var reader = command.ExecuteReader())
+        //     {
+        //         while (reader.Read())
+        //         {
+        //             var name = reader["name"]?.ToString();
+        //             var pinyin = reader["pinyin"]?.ToString();
+        //             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(pinyin)) continue;
+        //             matchedIngredients.Add(new
+        //             {
+        //                 name,
+        //                 pinyin
+        //             });
+        //         }
+        //     }
+        // }
 
-        _connection.Close();
-        return Json(matchedIngredients);
+        return Json(ingredients);
     }
 }
