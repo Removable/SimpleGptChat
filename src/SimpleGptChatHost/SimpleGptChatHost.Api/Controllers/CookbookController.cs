@@ -23,27 +23,7 @@ public class CookbookController : Controller
     {
         var selectSql =
             $"SELECT * FROM Ingredients t WHERE t.name LIKE '%{keyword}%' or t.pinyin LIKE '%{keyword}%' or t.initial LIKE '%{keyword}%'";
-        var ingredients = await _dbContext.Ingredients.FromSqlRaw(selectSql).ToArrayAsync();
-
-        // using (var command = new SQLiteCommand(selectSql, _dbContext))
-        // {
-        //     command.Parameters.Add(new SQLiteParameter("@keyword", DbType.String) { Value = $"%{keyword}%" });
-        //
-        //     using (var reader = command.ExecuteReader())
-        //     {
-        //         while (reader.Read())
-        //         {
-        //             var name = reader["name"]?.ToString();
-        //             var pinyin = reader["pinyin"]?.ToString();
-        //             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(pinyin)) continue;
-        //             matchedIngredients.Add(new
-        //             {
-        //                 name,
-        //                 pinyin
-        //             });
-        //         }
-        //     }
-        // }
+        var ingredients = await _dbContext.Ingredients.FromSqlRaw(selectSql).AsNoTracking().ToArrayAsync();
 
         return Json(ingredients);
     }
