@@ -3,6 +3,7 @@ import './TagSelect.css';
 import { useToggle } from 'ahooks';
 import React, { ChangeEvent, KeyboardEvent, useCallback, useRef, useState } from 'react';
 
+import UseDebounce from '../../hooks/useDebounce';
 import useOutsideClick from '../../hooks/useOutsideClick';
 import SelectTag from '../SelectTag/SelectTag';
 import { ArrowSvg } from './ArrowSvg';
@@ -14,27 +15,35 @@ export const TagSelect = (props: TagSelectProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [options, setOptions] = useState<SelectOption[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const inputContainerRef = useRef<HTMLDivElement>(null);
   const containerDivRef = useRef<HTMLDivElement>(null);
-  const bodyDivRef = useRef<HTMLDivElement>(null);
+  const bodyContainerRef = useRef<HTMLDivElement>(null);
+  const tagsContainerRef = useRef<HTMLDivElement>(null);
   const spanRef = useRef<HTMLSpanElement>(null);
+  const debounceFn = UseDebounce((keyWord: string) => {
+    props.onSearch && props.onSearch(keyWord);
+  }, 1000);
 
   const handleClick = useCallback(() => {
     inputRef.current?.focus();
     setIsOpen.toggle();
   }, [setIsOpen]);
 
-  const addOrRemoveTag = useCallback((tagVal: string) => {
-    tagVal = tagVal.trim();
-    if (tagVal === '') return;
-    setSelectedItems((prevSelectedItems) => {
-      const tagExists = prevSelectedItems.includes(tagVal);
-      if (tagExists) {
-        return prevSelectedItems.filter((item) => item !== tagVal);
-      } else {
-        return [...prevSelectedItems, tagVal];
-      }
-    });
-  }, []);
+  const addOrRemoveTag = useCallback(
+    (tagVal: string) => {
+      tagVal = tagVal.trim();
+      if (tagVal === '') return;
+      setSelectedItems((prevSelectedItems) => {
+        const tagExists = prevSelectedItems.includes(tagVal);
+        if (tagExists) {
+          return prevSelectedItems.filter((item) => item !== tagVal);
+        } else {
+          return [...prevSelectedItems, tagVal];
+        }
+      });
+    },
+    [selectedItems],
+  );
 
   const handleCloseTag = useCallback((val: string) => {
     setSelectedItems((prevSelectedItems) =>
@@ -59,8 +68,28 @@ export const TagSelect = (props: TagSelectProps) => {
     [inputVal, addOrRemoveTag],
   );
 
+  const resetInputWidth = useCallback(
+    (inputVal: string) => {
+      if (!inputContainerRef.current || !spanRef.current) return;
+      spanRef.current.textContent = inputVal;
+      const width = spanRef.current.offsetWidth <= 0 ? 2 : spanRef.current.offsetWidth;
+      inputContainerRef.current.style.width = width + 'px';
+
+      if (selectedItems.length < 1) {
+        inputContainerRef.current.style.width = '100%';
+      }
+
+      if (bodyContainerRef.current && tagsContainerRef.current) {
+        console.log('tempValue', tagsContainerRef.current?.scrollHeight);
+        // bodyContainerRef.current.style.height =
+        //   String(bodyDivRef.current.scrollHeight + 2) + 'px';
+      }
+    },
+    [selectedItems.length, bodyContainerRef.current?.style.height],
+  );
+
   const handleChange = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       if (!inputRef.current || !spanRef.current) return;
       const { value } = event.target;
       let tempValue = value.replace('，', ',').trim();
@@ -73,29 +102,17 @@ export const TagSelect = (props: TagSelectProps) => {
       resetInputWidth(tempValue);
 
       if (props.onSearch && tempValue.length > 0) {
-        await props.onSearch(tempValue);
+        debounceFn(tempValue);
       }
     },
-    [addOrRemoveTag],
-  );
-
-  const resetInputWidth = useCallback(
-    (inputVal: string) => {
-      if (!inputRef.current || !spanRef.current) return;
-      spanRef.current.textContent = inputVal;
-      const width = spanRef.current.offsetWidth <= 0 ? 2 : spanRef.current.offsetWidth;
-      inputRef.current.style.width = width + 'px';
-
-      if (selectedItems.length < 1) {
-        inputRef.current.style.width = '100%';
-      }
-    },
-    [selectedItems.length],
+    [addOrRemoveTag, resetInputWidth],
   );
 
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
-      addOrRemoveTag(inputVal);
+      if (inputVal.trim().length > 0) {
+        addOrRemoveTag(inputVal);
+      }
       setInputVal('');
       resetInputWidth('');
       if (
@@ -125,81 +142,50 @@ export const TagSelect = (props: TagSelectProps) => {
 
   return (
     <>
-      <div
-        className={`select-container ${props.className ?? ''}`}
-        style={props.style}
-        ref={containerDivRef}
-      >
-        <div className="select-body-container" onClick={handleClick}>
+      <div className="tag-select-container" style={{ minHeight: props.defaultHeight }}>
+        <div className="tag-select-body-container">
           <div className="select-body-inner-container">
-            <div ref={bodyDivRef} className="select-body-inner-tags-container">
-              {selectedItems.map((tag) => (
-                <SelectTag key={tag} label={tag} onClose={handleCloseTag} />
-              ))}
-              <div
-                style={
-                  selectedItems.length <= 0
-                    ? { width: '100%', marginLeft: '10px' }
-                    : {
-                        width: '2px',
-                        marginLeft: '2px',
-                      }
-                }
-              >
-                <input
-                  value={inputVal}
-                  ref={inputRef}
-                  className="select-body-inner-input"
-                  placeholder={selectedItems.length <= 0 ? props.placeholder : ''}
-                  onChange={handleChange}
-                  onKeyDown={handleKeyDown}
-                />
-              </div>
+            <SelectTag
+              label={'tagtagtagtagtagtagtagtagtag'}
+              onClose={handleCloseTag}
+              height={`calc(${props.defaultHeight} - 6px)`}
+            />
+            <SelectTag
+              label={'tagtagtagtagtagtagtagtagtag'}
+              onClose={handleCloseTag}
+              height={`calc(${props.defaultHeight} - 6px)`}
+            />
+            <SelectTag
+              label={'tagtagtagtagtagtagtagtagtag'}
+              onClose={handleCloseTag}
+              height={`calc(${props.defaultHeight} - 6px)`}
+            />
+            <SelectTag
+              label={'tagtagtagtagta'}
+              onClose={handleCloseTag}
+              height={`calc(${props.defaultHeight} - 6px)`}
+            />
+            <div
+              className="tag-select-body-input-container"
+              style={{ height: props.defaultHeight }}
+            >
+              <input type="text" placeholder="请输入" />
             </div>
           </div>
-          <div className="select-body-inner-arrow">
-            <ArrowSvg />
-          </div>
         </div>
-        {isOpen && (
-          <div className="select-options-container">
-            {options.length <= 0 ? (
-              <div className="select-no-option-container">暂无数据</div>
-            ) : (
-              options.map((option) => {
-                const selected = selectedItems.includes(option.value);
-                return (
-                  <div
-                    className={
-                      'select-option' +
-                      (selected ? ' select-option-selected' : ' select-option-normal')
-                    }
-                    key={option.value}
-                    onClick={() => handleSelectOption(option)}
-                  >
-                    {option.label}
-                    <CheckedSvg
-                      style={{
-                        visibility: selected ? 'visible' : 'hidden',
-                      }}
-                    />
-                  </div>
-                );
-              })
-            )}
-          </div>
-        )}
+        <div className="select-arrow-container">
+          <ArrowSvg />
+        </div>
       </div>
-      <span className="hidden-span" ref={spanRef} />
     </>
   );
 };
 
 interface TagSelectProps {
-  className?: string;
-  style?: React.CSSProperties;
+  defaultHeight?: string;
   placeholder?: string;
-  onSearch?: (val: string) => Promise<SelectOption[]>;
+  onSearch?: (value: string) => void;
+  maxLength?: number;
 }
 
 interface SelectOption {

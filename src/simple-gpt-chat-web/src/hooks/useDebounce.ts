@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 type DebounceFn<T extends (...args: any[]) => any> = (...args: Parameters<T>) => void;
 
-function useDebounce<T extends (...args: any[]) => any>(
+function useDebounce<T extends (...args: any[]) => any | void>(
   callback: T,
   delay: number,
 ): DebounceFn<T> {

@@ -1,0 +1,35 @@
+.tag-container {
+    background-color: #f0f0f0;
+    border: 1px solid #e2e2e2;
+    border-radius: 6px;
+    overflow: auto;
+    display: flex;
+    flex-direction: row;
+    margin: 2px;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+.tag-label-container {
+    height: 100%;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tag-label-container span {
+    flex: none;
+    overflow: hidden;
+    white-space: pre;
+    text-overflow: ellipsis;
+    margin: 0 4px;
+}
+
+.tag-close-container {
+    width: 20px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

@@ -75,6 +75,10 @@ const OnDemandTab = () => {
     }
   };
 
+  const handleSearch2 = (value: string) => {
+    // console.log('handleSearch2: ', value);
+  };
+
   const handleClear = () => {
     Modal.confirm({
       title: '确定清空吗？',
@@ -98,10 +102,14 @@ const OnDemandTab = () => {
           // value={selected}
           options={options || []}
         />
-        <TagSelect
-          className="mt-4"
-          placeholder="选择食材 - 可以搜索选择也可以自定义输入"
-        />
+        <div className="mt-4">
+          <TagSelect
+            placeholder="选择食材 - 可以搜索选择也可以自定义输入"
+            onSearch={handleSearch2}
+            defaultHeight="40px"
+            maxLength={30}
+          />
+        </div>
       </div>
       <div className="w-full flex justify-end p-3">
         <Space>
@@ -111,7 +119,6 @@ const OnDemandTab = () => {
           <Button type="primary">问问AI</Button>
         </Space>
       </div>
-      <div></div>
     </div>
   );
 };
