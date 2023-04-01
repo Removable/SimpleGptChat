@@ -35,6 +35,13 @@ export const TagSelect = (props: TagSelectProps) => {
       if (tagVal === '') return;
       setSelectedItems((prevSelectedItems) => {
         const tagExists = prevSelectedItems.includes(tagVal);
+        if (inputContainerRef.current) {
+          if (tagExists && prevSelectedItems.length === 1) {
+            inputContainerRef.current.style.width = '';
+          } else {
+            inputContainerRef.current.style.width = '2px';
+          }
+        }
         if (tagExists) {
           return prevSelectedItems.filter((item) => item !== tagVal);
         } else {
@@ -46,9 +53,7 @@ export const TagSelect = (props: TagSelectProps) => {
   );
 
   const handleCloseTag = useCallback((val: string) => {
-    setSelectedItems((prevSelectedItems) =>
-      prevSelectedItems.filter((item) => item !== val),
-    );
+    addOrRemoveTag(val);
   }, []);
 
   const handleKeyDown = useCallback(
@@ -56,36 +61,14 @@ export const TagSelect = (props: TagSelectProps) => {
       if (event.key === 'Enter') {
         addOrRemoveTag(inputVal.trim());
         setInputVal('');
-        resetInputWidth('');
       } else if (event.key === 'Backspace' && inputVal === '') {
-        setSelectedItems((prevSelectedItems) => {
-          const newSelectedItems = [...prevSelectedItems];
-          newSelectedItems.pop();
-          return newSelectedItems;
-        });
+        const latestItem = selectedItems[selectedItems.length - 1];
+        if (latestItem) {
+          addOrRemoveTag(latestItem);
+        }
       }
     },
     [inputVal, addOrRemoveTag],
-  );
-
-  const resetInputWidth = useCallback(
-    (inputVal: string) => {
-      if (!inputContainerRef.current || !spanRef.current) return;
-      spanRef.current.textContent = inputVal;
-      const width = spanRef.current.offsetWidth <= 0 ? 2 : spanRef.current.offsetWidth;
-      inputContainerRef.current.style.width = width + 'px';
-
-      if (selectedItems.length < 1) {
-        inputContainerRef.current.style.width = '100%';
-      }
-
-      if (bodyContainerRef.current && tagsContainerRef.current) {
-        console.log('tempValue', tagsContainerRef.current?.scrollHeight);
-        // bodyContainerRef.current.style.height =
-        //   String(bodyDivRef.current.scrollHeight + 2) + 'px';
-      }
-    },
-    [selectedItems.length, bodyContainerRef.current?.style.height],
   );
 
   const handleChange = useCallback(
@@ -99,13 +82,18 @@ export const TagSelect = (props: TagSelectProps) => {
         tempValue = '';
       }
       setInputVal(tempValue);
-      resetInputWidth(tempValue);
+      // resetInputWidth
+      if (selectedItems.length > 0 && inputContainerRef.current && spanRef.current) {
+        spanRef.current.textContent = tempValue;
+        const width = spanRef.current.offsetWidth <= 0 ? 2 : spanRef.current.offsetWidth;
+        inputContainerRef.current.style.width = width + 'px';
+      }
 
       if (props.onSearch && tempValue.length > 0) {
         debounceFn(tempValue);
       }
     },
-    [addOrRemoveTag, resetInputWidth],
+    [addOrRemoveTag],
   );
 
   const handleClickOutside = useCallback(
@@ -114,7 +102,6 @@ export const TagSelect = (props: TagSelectProps) => {
         addOrRemoveTag(inputVal);
       }
       setInputVal('');
-      resetInputWidth('');
       if (
         isOpen &&
         containerDivRef.current &&
@@ -142,34 +129,33 @@ export const TagSelect = (props: TagSelectProps) => {
 
   return (
     <>
-      <div className="tag-select-container" style={{ minHeight: props.defaultHeight }}>
+      <div
+        className="tag-select-container"
+        style={{ minHeight: props.defaultHeight }}
+        onClick={handleClick}
+      >
         <div className="tag-select-body-container">
           <div className="select-body-inner-container">
-            <SelectTag
-              label={'tagtagtagtagtagtagtagtagtag'}
-              onClose={handleCloseTag}
-              height={`calc(${props.defaultHeight} - 6px)`}
-            />
-            <SelectTag
-              label={'tagtagtagtagtagtagtagtagtag'}
-              onClose={handleCloseTag}
-              height={`calc(${props.defaultHeight} - 6px)`}
-            />
-            <SelectTag
-              label={'tagtagtagtagtagtagtagtagtag'}
-              onClose={handleCloseTag}
-              height={`calc(${props.defaultHeight} - 6px)`}
-            />
-            <SelectTag
-              label={'tagtagtagtagta'}
-              onClose={handleCloseTag}
-              height={`calc(${props.defaultHeight} - 6px)`}
-            />
-            <div
-              className="tag-select-body-input-container"
-              style={{ height: props.defaultHeight }}
-            >
-              <input type="text" placeholder="请输入" />
+            {selectedItems.map((item, index) => {
+              return (
+                <SelectTag
+                  key={index}
+                  label={item}
+                  onClose={handleCloseTag}
+                  height={`calc(${props.defaultHeight} - 6px)`}
+                />
+              );
+            })}
+            <div className="tag-select-body-input-container" ref={inputContainerRef}>
+              <input
+                type="text"
+                placeholder="选择食材 - 可以搜索选择也可以自定义输入"
+                ref={inputRef}
+                value={inputVal}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+              />
+              <span onChange={(e) => console.log(e)}>{inputVal}</span>
             </div>
           </div>
         </div>
@@ -177,6 +163,8 @@ export const TagSelect = (props: TagSelectProps) => {
           <ArrowSvg />
         </div>
       </div>
+      <span className="hidden-span" ref={spanRef} />
+      {JSON.stringify(selectedItems)}
     </>
   );
 };

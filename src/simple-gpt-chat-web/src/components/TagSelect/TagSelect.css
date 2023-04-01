@@ -1,70 +1,95 @@
 :root {
-    --tag-select-default-height: 30px;
-    --arrow-width: 25px;
-    --standard-font-size: 16px;
-    --select-border-color: #d9d9d9;
-    --select-option-hover-color: #f5f5f5;
-    --select-option-selected-background-color: #dcedfc;
-    --select-option-selected-hover-color: #c2e0fc;
-    --select-no-option-container-height: 100px;
+  --tag-select-default-height: 30px;
+  --arrow-width: 25px;
+  --standard-font-size: 16px;
+  --select-border-color: #d9d9d9;
+  --select-option-hover-color: #f5f5f5;
+  --select-option-selected-background-color: #dcedfc;
+  --select-option-selected-hover-color: #c2e0fc;
+  --select-no-option-container-height: 100px;
 }
 
 .tag-select-container {
-    border-radius: 6px;
-    border: 1px solid var(--select-border-color);
-    width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
+  border-radius: 6px;
+  border: 1px solid var(--select-border-color);
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
 }
 
 /*w-[calc(100%-2.5rem)] border border-pink-200 h-full box-border*/
 .tag-select-body-container {
-    width: calc(100% - var(--arrow-width));
-    align-self: stretch;
-    cursor: text;
+  width: calc(100% - var(--arrow-width));
+  align-self: stretch;
+  cursor: text;
 }
 
 .select-body-inner-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    border: none;
-    overflow: hidden;
-    box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  border: none;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.select-body-inner-container > :only-child {
+  margin-left: 10px;
+  width: 100%;
+}
+
+.select-body-inner-container > :not(:only-child):last-child {
+  min-width: 2px;
 }
 
 .tag-select-body-input-container {
-    margin-left: 2px;
-    display: flex;
+  margin-left: 2px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-.tag-select-body-input-container input{
-    border: none;
-    outline: none;
+.tag-select-body-input-container input {
+  border: none;
+  outline: none;
+  font-size: var(--standard-font-size);
+  width: 100%;
+  flex-grow: 1;
 }
 
 .tag-select-body-input-container input::placeholder {
-    color: var(--select-border-color);
-    font-size: var(--standard-font-size);
-    text-indent: 3px;
+  color: var(--select-border-color);
+  font-size: var(--standard-font-size);
+  text-indent: 3px;
+}
+
+.tag-select-body-input-container span {
+  height: 1px;
+  font-size: var(--standard-font-size);
 }
 
 .select-arrow-container {
-    width: var(--arrow-width);
-    align-self: stretch;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    cursor: text;
+  width: var(--arrow-width);
+  align-self: stretch;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: text;
 }
 
 .select-arrow-container svg {
-    color: var(--select-border-color);
+  color: var(--select-border-color);
+}
+
+.hidden-span {
+  font-size: var(--standard-font-size);
+  visibility: hidden;
+  position: absolute;
 }
