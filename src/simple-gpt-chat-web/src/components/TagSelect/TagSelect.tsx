@@ -16,13 +16,11 @@ export const TagSelect = (props: TagSelectProps) => {
   const [options, setOptions] = useState<SelectOption[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
-  const containerDivRef = useRef<HTMLDivElement>(null);
-  const bodyContainerRef = useRef<HTMLDivElement>(null);
-  const tagsContainerRef = useRef<HTMLDivElement>(null);
+  const outerContainerRef = useRef<HTMLDivElement>(null);
   const spanRef = useRef<HTMLSpanElement>(null);
   const debounceFn = UseDebounce((keyWord: string) => {
     props.onSearch && props.onSearch(keyWord);
-  }, 1000);
+  }, 500);
 
   const handleClick = useCallback(() => {
     inputRef.current?.focus();
@@ -104,9 +102,9 @@ export const TagSelect = (props: TagSelectProps) => {
       setInputVal('');
       if (
         isOpen &&
-        containerDivRef.current &&
+        outerContainerRef.current &&
         event.target &&
-        !containerDivRef.current.contains(event.target as Node)
+        !outerContainerRef.current.contains(event.target as Node)
       ) {
         setIsOpen.toggle();
       }
@@ -114,7 +112,7 @@ export const TagSelect = (props: TagSelectProps) => {
     [inputVal, isOpen, setIsOpen, addOrRemoveTag],
   );
 
-  useOutsideClick(containerDivRef, handleClickOutside);
+  useOutsideClick(outerContainerRef, handleClickOutside);
 
   const handleSelectOption = useCallback((option: SelectOption) => {
     setSelectedItems((prevSelectedItems) => {
@@ -128,7 +126,7 @@ export const TagSelect = (props: TagSelectProps) => {
   }, []);
 
   return (
-    <>
+    <div className="tag-select-outer-container" ref={outerContainerRef}>
       <div
         className="tag-select-container"
         style={{ minHeight: props.defaultHeight }}
@@ -142,11 +140,15 @@ export const TagSelect = (props: TagSelectProps) => {
                   key={index}
                   label={item}
                   onClose={handleCloseTag}
-                  height={`calc(${props.defaultHeight} - 6px)`}
+                  height={`calc(${props.defaultHeight} - 4px)`}
                 />
               );
             })}
-            <div className="tag-select-body-input-container" ref={inputContainerRef}>
+            <div
+              className="tag-select-body-input-container"
+              style={{ height: props.defaultHeight }}
+              ref={inputContainerRef}
+            >
               <input
                 type="text"
                 placeholder="选择食材 - 可以搜索选择也可以自定义输入"
@@ -155,7 +157,6 @@ export const TagSelect = (props: TagSelectProps) => {
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
               />
-              <span onChange={(e) => console.log(e)}>{inputVal}</span>
             </div>
           </div>
         </div>
@@ -163,9 +164,24 @@ export const TagSelect = (props: TagSelectProps) => {
           <ArrowSvg />
         </div>
       </div>
+      {isOpen && (
+        <div
+          className="select-options-container"
+          style={{ top: `calc(${props.defaultHeight} + 6px)` }}
+        >
+          {options.length <= 0 ? (
+            <>123</>
+          ) : (
+            options.map((option) => (
+              <div className="select-option" key={option.value}>
+                {option.label}
+              </div>
+            ))
+          )}
+        </div>
+      )}
       <span className="hidden-span" ref={spanRef} />
-      {JSON.stringify(selectedItems)}
-    </>
+    </div>
   );
 };
 

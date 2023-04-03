@@ -76,7 +76,7 @@ const OnDemandTab = () => {
   };
 
   const handleSearch2 = (value: string) => {
-    // console.log('handleSearch2: ', value);
+    console.log('handleSearch2: ', value);
   };
 
   const handleClear = () => {
