@@ -13,13 +13,30 @@ export const TagSelect = (props: TagSelectProps) => {
   const [isOpen, setIsOpen] = useToggle(false);
   const [inputVal, setInputVal] = useState('');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [options, setOptions] = useState<SelectOption[]>([]);
+  const [keywordItems, setKeywordItems] = useState<SelectOption[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
   const outerContainerRef = useRef<HTMLDivElement>(null);
   const spanRef = useRef<HTMLSpanElement>(null);
   const debounceFn = UseDebounce((keyWord: string) => {
     props.onSearch && props.onSearch(keyWord);
+    if (
+      props.options &&
+      props.options.findIndex((item) => item.label === keyWord) === -1
+    ) {
+      if (keyWord === '') {
+        setKeywordItems([]);
+        return;
+      }
+      const items: SelectOption[] = [
+        {
+          label: keyWord,
+          value: keyWord,
+        },
+      ];
+      setKeywordItems(items);
+      console.log('keywordItems: ', keywordItems);
+    }
   }, 500);
 
   const handleClick = useCallback(() => {
@@ -87,7 +104,7 @@ export const TagSelect = (props: TagSelectProps) => {
         inputContainerRef.current.style.width = width + 'px';
       }
 
-      if (props.onSearch && tempValue.length > 0) {
+      if (props.onSearch) {
         debounceFn(tempValue);
       }
     },
@@ -124,6 +141,10 @@ export const TagSelect = (props: TagSelectProps) => {
       }
     });
   }, []);
+
+  const generateOptions = useCallback(() => {
+    const conbineOptions = [...(props.options ?? [])];
+  }, [props.options, keywordItems, selectedItems]);
 
   return (
     <div className="tag-select-outer-container" ref={outerContainerRef}>
@@ -169,10 +190,10 @@ export const TagSelect = (props: TagSelectProps) => {
           className="select-options-container"
           style={{ top: `calc(${props.defaultHeight} + 6px)` }}
         >
-          {options.length <= 0 ? (
-            <>123</>
+          {keywordItems.length <= 0 && (!props.options || props.options.length <= 0) ? (
+            <div className="no-content-prompt">输入食材名称吧！</div>
           ) : (
-            options.map((option) => (
+            keywordItems.concat(props.options ?? []).map((option) => (
               <div className="select-option" key={option.value}>
                 {option.label}
               </div>
@@ -190,9 +211,10 @@ interface TagSelectProps {
   placeholder?: string;
   onSearch?: (value: string) => void;
   maxLength?: number;
+  options?: SelectOption[];
 }
 
-interface SelectOption {
+export interface SelectOption {
   label: string;
   value: string;
 }

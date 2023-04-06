@@ -4,6 +4,7 @@ import { Button, Modal, Select, SelectProps, Space, Tabs, TabsProps } from 'antd
 import React, { useEffect, useState } from 'react';
 
 import TagSelect from '../../components/TagSelect';
+import { SelectOption } from '../../components/TagSelect/TagSelect';
 import { myAxios } from '../../my-axios';
 
 const Cookbook = () => {
@@ -42,6 +43,7 @@ const Cookbook = () => {
 
 const OnDemandTab = () => {
   const [options, setOptions] = useState<SelectProps['options']>([]);
+  const [options2, setOptions2] = useState<SelectOption[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
 
   const handleChange = (value: { value: string; label: React.ReactNode }) => {
@@ -76,7 +78,12 @@ const OnDemandTab = () => {
   };
 
   const handleSearch2 = (value: string) => {
-    console.log('handleSearch2: ', value);
+    if (value.trim()) {
+      // console.log('handleSearch2: ', value);
+      // if (options2.findIndex((item) => item.label === value) === -1) {
+      //   setOptions2([{ label: value, value: value }, ...options2]);
+      // }
+    }
   };
 
   const handleClear = () => {
@@ -108,6 +115,7 @@ const OnDemandTab = () => {
             onSearch={handleSearch2}
             defaultHeight="40px"
             maxLength={30}
+            options={options2}
           />
         </div>
       </div>
